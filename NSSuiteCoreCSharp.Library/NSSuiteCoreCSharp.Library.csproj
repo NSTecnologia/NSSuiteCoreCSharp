@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="src\Requisicoes\BPe\Utilitarios\" />
+    <Folder Include="src\Requisicoes\CTe\Utilitarios\" />
+    <Folder Include="src\Respostas\BPe\Utilitarios\" />
+    <Folder Include="src\Respostas\_Genéricas\Utilitarios\" />
+  </ItemGroup>
+
+</Project>
