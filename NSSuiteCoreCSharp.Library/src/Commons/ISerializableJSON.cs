@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NSSuiteCoreCSharp.Commons
+﻿namespace NSSuiteCoreCSharp.Library.src.Commons
 {
     public interface ISerializableJSON
     {

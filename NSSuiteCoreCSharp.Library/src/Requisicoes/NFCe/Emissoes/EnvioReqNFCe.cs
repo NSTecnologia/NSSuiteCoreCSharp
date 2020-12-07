@@ -6,10 +6,9 @@ using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using NSSuiteCoreCSharp.Commons;
+using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Emissoes;
-using NSSuiteCoreCSharp.Respostas._Genéricas;
-using NSSuiteCoreCSharp.src.Commons;
 
 namespace NSSuiteClientCSharp.Projetos.NFe.Requisições
 {

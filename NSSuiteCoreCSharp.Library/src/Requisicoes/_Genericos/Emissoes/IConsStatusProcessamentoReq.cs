@@ -1,8 +1,6 @@
 ﻿using NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes;
-using NSSuiteCSharpLib.Respostas._Genéricas;
-using NSSuiteCSharpLib.Respostas._Genéricas.Emissoes;
 
-namespace NSSuiteCSharpLib.Requisicoes._Genericos.Emissoes
+namespace NSSuiteCoreCSharp.Library.src.Requisicoes._Genericos.Emissoes
 {
     public interface IConsStatusProcessamentoReq : IRequisicao
     {

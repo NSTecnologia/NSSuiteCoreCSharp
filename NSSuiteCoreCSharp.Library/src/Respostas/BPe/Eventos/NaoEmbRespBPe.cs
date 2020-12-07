@@ -1,4 +1,5 @@
-﻿using NSSuiteCoreCSharp.Commons;
+﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas._Genéricas.Eventos;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 
 namespace NSSuiteCSharpLib.Respostas.BPe.Eventos
 {
-    public class NaoEmbRespBPe: IResposta, IEventoSalvoRespBPe
+    public class NaoEmbRespBPe: IResposta, IEventoSalvoResp
     {
         public string status { get; set; }
         public string motivo { get; set; }
@@ -26,7 +27,7 @@ namespace NSSuiteCSharpLib.Respostas.BPe.Eventos
             else
                 throw new Exception();
         }
-        public void ValidaESalvaXML(string caminhoSalvar)
+        public void ValidarESalvar(string caminhoSalvar)
         {
             this.Valida();
             string xml = this.retEvento.xml;

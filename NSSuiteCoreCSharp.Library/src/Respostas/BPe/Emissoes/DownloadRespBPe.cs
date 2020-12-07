@@ -1,9 +1,11 @@
-﻿
-using NSSuiteCoreCSharp.Commons;
+﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genérica;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas._Genéricas.Emissoes;
 using NSSuiteCSharpLib.Genericos.Exceptions;
-using NSSuiteCSharpLib.Respostas._Genéricas;
+using System;
 using System.Diagnostics;
 
 namespace NSSuiteCSharpLib.Respostas.BPe
@@ -37,17 +39,28 @@ namespace NSSuiteCSharpLib.Respostas.BPe
         {
             this.Valida();
 
-            string nomeArq = $"{chBPe}-procBPe";
-
-            Util.SalvarXML(this.xml, caminho, nomeArq);
-
-            if (!string.IsNullOrEmpty(this.pdf))
+            Util.GravarLinhaLog($"[SALVANDO DOCUMENTO(S) EM {caminho}]");
+            try
             {
-                Util.SalvarPDF(this.pdf, caminho, nomeArq);
+                string nomeArq = $"{chBPe}-procBPe";
+                if (!string.IsNullOrEmpty(this.xml))
+                {
+                    Util.SalvarXML(this.xml, caminho, nomeArq);
+                }
+                if (!string.IsNullOrEmpty(this.pdf))
+                {
+                    Util.SalvarPDF(this.pdf, caminho, nomeArq);
 
-                if (exibirPDF)
-                    Process.Start($"{caminho + nomeArq}.pdf");
+                    if (exibirPDF)
+                        Process.Start(@"cmd.exe ", $"/c {caminho + nomeArq}.pdf");
+                }
+                Util.GravarLinhaLog("[DOCUMENTO(S) SALVO(S)]");
             }
+            catch (Exception e) 
+            {
+                throw new SalvarDocumentosException(e.Message);
+            }
+
         }
 
     }

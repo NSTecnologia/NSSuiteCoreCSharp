@@ -4,13 +4,12 @@ using System;
 using System.IO;
 using System.Net;
 
-namespace NSSuiteCoreCSharp.Commons
+namespace NSSuiteCoreCSharp.Library.src.Commons
 {
     public abstract class SolicitavelNaAPI : ISerializableJSON
     {
-        private const string Token = "INSIRA_SEU_TOKEN_AQUI";
-
-        //public abstract IResposta Envia();
+        private const string Token = "4EB15D6DEDAEBAE3FD0B7B5E5B0AD6D4";
+        //private const string Token = "INSIRA_SEU_TOKEN_AQUI";
         public virtual string ToJSONString()
         {
             return JsonConvert.SerializeObject(this);
@@ -40,7 +39,9 @@ namespace NSSuiteCoreCSharp.Commons
                         break;
                     }
             }
-
+            Util.GravarLinhaLog($"[TOKEN REQUISICAO: {Token}]");
+            Util.GravarLinhaLog("[DADOS_REQUISITADOS_API]");
+            Util.GravarLinhaLog(requisicao);
 
             using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
             {
@@ -80,6 +81,9 @@ namespace NSSuiteCoreCSharp.Commons
                     }
                 }
             }
+            Util.GravarLinhaLog("[DADOS_RETORNADOS_API]");
+            Util.GravarLinhaLog(retorno);
+
             return retorno;
         }
     }

@@ -1,15 +1,16 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using NSSuiteCoreCSharp.Commons;
+using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Requisicoes.BPe.Emissoes;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Emissoes;
 using NSSuiteCoreCSharp.Requisicoes.BPe.Emissoes;
-using NSSuiteCoreCSharp.Respostas._Genéricas;
-using NSSuiteCoreCSharp.src.Commons;
 using NSSuiteCoreCSharp.thiss.BPe.Emissoes;
-using NSSuiteCSharpLib.Requisicoes.BPe;
 using NSSuiteCSharpLib.Respostas.BPe;
 using NSSuiteCSharpLib.Respostas.BPe.Emissoes;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
@@ -225,32 +226,39 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
         public string Algorithm { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.ComponentModel.DesignerCategory("code")]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     [XmlRoot("BPe", Namespace = "http://www.portalfiscal.inf.br/bpe", IsNullable = false)]
+    [JsonObject("BPe")]
     public partial class EnvioReqBPe : SolicitavelNaAPI, IEmissaoDFeSincrona
     {
-        public TBPeInfBPe infBPe;
+        public TBPeInfBPe infBPe { get; set; }
 
-        public TBPeInfBPeSupl infBPeSupl;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeSupl infBPeSupl { get; set; }
 
         [XmlElement(Namespace = "http://www.w3.org/2000/09/xmldsig#")]
         [JsonIgnore()]
-        public SignatureType signature;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public SignatureType signature { get; set; }
 
         //Metodos de Envio para API
         public IResposta Envia()
         {
+            Util.GravarLinhaLog("[ENVIO BPE INICIO]");
             string resposta = EnviaConteudoParaAPI(this, Endpoints.BPeEnvio);
+            Util.GravarLinhaLog("[ENVIO BPE FIM]");
+
             return JsonConvert.DeserializeObject<EnvioRespBPe>(resposta);
         }
         public void EnvioSincrono(TipoDownloadDFes tpDown, string caminho, bool exibirPDF, bool a3)
         {
-            var envioResposta = Envia() as EnvioRespBPe;
+            Util.GravarLinhaLog("[INICIO_EMISSAO_SINCRONA_BPE]");
+
+            var envioResposta = this.Envia() as EnvioRespBPe;
             envioResposta.Valida();
 
             var consultaRequisicao = new ConsStatusProcessamentoReqBPe
@@ -259,8 +267,20 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
                 tpAmb = (int)infBPe.ide.tpAmb,
                 nsNRec = envioResposta.nsNRec
             };
-            var consultaResposta = consultaRequisicao.Envia() as ConsStatusProcessamentoRespBPe;
-            consultaResposta.Valida();
+            ConsStatusProcessamentoRespBPe consultaResposta;
+            while (true)
+            {
+                consultaResposta = consultaRequisicao.Envia() as ConsStatusProcessamentoRespBPe;
+                try
+                {
+                    consultaResposta.Valida();
+                    break;
+                }
+                catch(InvalidOperationException)
+                {
+                    continue;
+                }
+            }
 
             var downloadRequisicao = new DownloadReqBPe
             {
@@ -271,6 +291,7 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
             var downloadResposta = downloadRequisicao.Envia() as DownloadRespBPe;
             downloadResposta.ValidarESalvar(caminho, exibirPDF);
 
+            Util.GravarLinhaLog("[FIM_EMISSAO_SINCRONA_BPE]");
         }
         public override string ToJSONString()
         {
@@ -279,9 +300,6 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
         }
     }
 
-
-
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -289,44 +307,50 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPe
     {
+        public TBPeInfBPeIde ide { get; set; }
 
-        public TBPeInfBPeIde ide;
+        public TBPeInfBPeEmit emit { get; set; }
 
-        public TBPeInfBPeEmit emit;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeComp comp { get; set; }
 
-        public TBPeInfBPeComp comp;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeAgencia agencia { get; set; }
 
-        public TBPeInfBPeAgencia agencia;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeInfBPeSub infBPeSub { get; set; }
 
-        public TBPeInfBPeInfBPeSub infBPeSub;
-
-        public TBPeInfBPeInfPassagem infPassagem;
+        public TBPeInfBPeInfPassagem infPassagem { get; set; }
 
         [XmlElement("infViagem")]
-        public TBPeInfBPeInfViagem[] infViagem;
+        public List<TBPeInfBPeInfViagem> infViagem { get; set; }
 
-        public TBPeInfBPeInfValorBPe infValorBPe;
+        public TBPeInfBPeInfValorBPe infValorBPe { get; set; }
 
-        public TBPeInfBPeImp Imp;
+        public TBPeInfBPeImp imp { get; set; }
 
         [XmlElement("pag")]
-        public TBPeInfBPePag[] pag;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public List<TBPeInfBPePag> pag { get; set; }
 
         [XmlElement("autXML")]
-        public TBPeInfBPeAutXML[] autXML;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public List<TBPeInfBPeAutXML> autXML { get; set; }
 
-        public TBPeInfBPeInfAdic infAdic;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeInfAdic infAdic { get; set; }
 
-        public TRespTec infRespTec;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TRespTec infRespTec { get; set; }
 
         [XmlAttribute()]
-        public string versao;
+        public string versao { get; set; }
 
         [XmlAttribute(DataType = "ID")]
-        public string Id;
+        [JsonIgnore()]
+        public string Id { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -335,567 +359,449 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     public partial class TBPeInfBPeIde
     {
         [JsonConverter(typeof(StringEnumConverter))]
-        public TCodUfIBGE cUF;
+        public TCodUfIBGE cUF { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public TAmb tpAmb;
+        public TAmb tpAmb { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public TModBPe mod;
+        public TModBPe mod { get; set; }
 
-        public string serie;
+        public string serie { get; set; }
 
-        public string nBP;
+        public string nBP { get; set; }
 
-        public string cBP;
+        public string cBP { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string cDV;
+        [JsonIgnore()]
+        public string cDV { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public TBPeInfBPeIdeModal modal;
+        public TBPeInfBPeIdeModal modal { get; set; }
 
-        public string dhEmi;
-
-        [JsonConverter(typeof(StringEnumConverter))]
-        public TBPeInfBPeIdeTpEmis tpEmis;
-
-        public string verProc;
+        public string dhEmi { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public TBPeInfBPeIdeTpBPe tpBPe;
+        public TBPeInfBPeIdeTpEmis tpEmis { get; set; }
+
+        public string verProc { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public TIndPres indPres;
+        public TBPeInfBPeIdeTpBPe tpBPe { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public TUf_sem_EX UFIni;
-
-        public string cMunIni;
+        public TIndPres indPres { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public TUf UFFim;
+        public TUf_sem_EX UFIni { get; set; }
 
-        public string cMunFim;
+        public string cMunIni { get; set; }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TUf UFFim { get; set; }
+
+        public string cMunFim { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string dhCont;
+        public string dhCont { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string xJust;
+        public string xJust { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TCodUfIBGE
     {
-
-        /// <remarks/>
         [EnumMember(Value = "11")]
         [XmlEnum("11")]
         RO,
 
-        /// <remarks/>
         [EnumMember(Value = "12")]
         [XmlEnum("12")]
         AC,
 
-        /// <remarks/>
         [EnumMember(Value = "13")]
         [XmlEnum("13")]
         AM,
 
-        /// <remarks/>
         [EnumMember(Value = "14")]
         [XmlEnum("14")]
         RR,
 
-        /// <remarks/>
         [EnumMember(Value = "15")]
         [XmlEnum("15")]
         PA,
 
-        /// <remarks/>
         [EnumMember(Value = "16")]
         [XmlEnum("16")]
         AP,
 
-        /// <remarks/>
         [EnumMember(Value = "17")]
         [XmlEnum("17")]
         TO,
 
-        /// <remarks/>
         [EnumMember(Value = "21")]
         [XmlEnum("21")]
         MA,
 
-        /// <remarks/>
         [EnumMember(Value = "22")]
         [XmlEnum("22")]
         PI,
 
-        /// <remarks/>
         [EnumMember(Value = "23")]
         [XmlEnum("23")]
         CE,
 
-        /// <remarks/>
         [EnumMember(Value = "24")]
         [XmlEnum("24")]
         RN,
 
-        /// <remarks/>
         [EnumMember(Value = "25")]
         [XmlEnum("25")]
         PB,
 
-        /// <remarks/>
         [EnumMember(Value = "26")]
         [XmlEnum("26")]
         PE,
 
-        /// <remarks/>
         [EnumMember(Value = "27")]
         [XmlEnum("27")]
         AL,
 
-        /// <remarks/>
         [EnumMember(Value = "28")]
         [XmlEnum("28")]
         SE,
 
-        /// <remarks/>
         [EnumMember(Value = "29")]
         [XmlEnum("29")]
         BA,
 
-        /// <remarks/>
         [EnumMember(Value = "31")]
         [XmlEnum("31")]
         MG,
 
-        /// <remarks/>
         [EnumMember(Value = "32")]
         [XmlEnum("32")]
         ES,
 
-        /// <remarks/>
         [EnumMember(Value = "33")]
         [XmlEnum("33")]
         RJ,
 
-        /// <remarks/>
         [EnumMember(Value = "35")]
         [XmlEnum("35")]
         SP,
 
-        /// <remarks/>
         [EnumMember(Value = "41")]
         [XmlEnum("41")]
         PR,
 
-        /// <remarks/>
         [EnumMember(Value = "42")]
         [XmlEnum("42")]
         SC,
-
-        /// <remarks/>
 
         [EnumMember(Value = "43")]
         [XmlEnum("43")]
         RS,
 
-        /// <remarks/>
-
         [EnumMember(Value = "50")]
         [XmlEnum("50")]
         MS,
 
-        /// <remarks/>
         [EnumMember(Value = "51")]
         [XmlEnum("51")]
         MT,
 
-        /// <remarks/>
         [EnumMember(Value = "52")]
         [XmlEnum("52")]
         GO,
 
-        /// <remarks/>
         [EnumMember(Value = "53")]
         [XmlEnum("53")]
         DF,
-
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TAmb
     {
 
-        /// <remarks/>
         [EnumMember(Value = "1")]
         [XmlEnum("1")]
         Producao = 1,
 
-        /// <remarks/>
         [EnumMember(Value = "2")]
         [XmlEnum("2")]
         Homologacao = 2,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TModBPe
     {
-
-        /// <remarks/>
         [EnumMember(Value = "63")]
         [XmlEnum("63")]
         BPe,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeIdeModal
     {
-
-        /// <remarks/>
         [EnumMember(Value = "1")]
         [XmlEnum("1")]
         Rodoviario,
 
-        /// <remarks/>
         [EnumMember(Value = "3")]
         [XmlEnum("3")]
         Aquaviario,
 
-        /// <remarks/>
         [EnumMember(Value = "4")]
         [XmlEnum("4")]
         Ferroviario,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeIdeTpEmis
     {
-
-        /// <remarks/>
         [EnumMember(Value = "1")]
         [XmlEnum("1")]
         Normal,
 
-        /// <remarks/>
         [EnumMember(Value = "2")]
         [XmlEnum("2")]
         Contingencia,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeIdeTpBPe
     {
-
-        /// <remarks/>
         [EnumMember(Value = "0")]
         [XmlEnum("0")]
         Normal,
 
-        /// <remarks/>
         [EnumMember(Value = "3")]
         [XmlEnum("3")]
         Substituicao,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TIndPres
     {
-
-        /// <remarks/>
         [EnumMember(Value = "1")]
         [XmlEnum("1")]
-        OpPresencialNaoEmbarcado,
+        OpPresencialNaoEmbarcado = 1,
 
-        /// <remarks/>
         [EnumMember(Value = "2")]
         [XmlEnum("2")]
-        OpNaoPresencialInternet,
+        OpNaoPresencialInternet = 2,
 
-        /// <remarks/>
         [EnumMember(Value = "3")]
         [XmlEnum("3")]
-        OpNaoPresencialTeleatendimento,
+        OpNaoPresencialTeleatendimento = 3,
 
-        /// <remarks/>
         [EnumMember(Value = "4")]
         [XmlEnum("4")]
-        EntregaADomicilio,
+        EntregaADomicilio = 4,
 
-        /// <remarks/>
         [EnumMember(Value = "5")]
         [XmlEnum("5")]
-        OpPresenscialEmbarcada,
+        OpPresenscialEmbarcada = 5,
 
-        /// <remarks/>
         [EnumMember(Value = "9")]
         [XmlEnum("9")]
-        OpNaoPresencialOutros,
+        OpNaoPresencialOutros = 9,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TUf_sem_EX
     {
-
-        /// <remarks/>
         [EnumMember(Value = "AC")]
         AC,
 
-        /// <remarks/>
         [EnumMember(Value = "AL")]
         AL,
 
-        /// <remarks/>
         [EnumMember(Value = "AM")]
         AM,
 
-        /// <remarks/>
         [EnumMember(Value = "AP")]
         AP,
 
-        /// <remarks/>
         [EnumMember(Value = "BA")]
         BA,
 
-        /// <remarks/>
         [EnumMember(Value = "CE")]
         CE,
 
-        /// <remarks/>
         [EnumMember(Value = "DF")]
         DF,
 
-        /// <remarks/>
         [EnumMember(Value = "ES")]
         ES,
 
-        /// <remarks/>
         [EnumMember(Value = "GO")]
         GO,
 
-        /// <remarks/>
         [EnumMember(Value = "MA")]
         MA,
 
-        /// <remarks/>
         [EnumMember(Value = "MG")]
         MG,
 
-        /// <remarks/>
         [EnumMember(Value = "MS")]
         MS,
 
-        /// <remarks/>
         [EnumMember(Value = "MT")]
         MT,
 
-        /// <remarks/>
         [EnumMember(Value = "PA")]
         PA,
 
-        /// <remarks/>
         [EnumMember(Value = "PB")]
         PB,
 
-        /// <remarks/>
         [EnumMember(Value = "PE")]
         PE,
 
-        /// <remarks/>
         [EnumMember(Value = "PI")]
         PI,
 
-        /// <remarks/>
         [EnumMember(Value = "PR")]
         PR,
 
-        /// <remarks/>
         [EnumMember(Value = "RJ")]
         RJ,
 
-        /// <remarks/>
         [EnumMember(Value = "RN")]
         RN,
 
-        /// <remarks/>
         [EnumMember(Value = "RO")]
         RO,
 
-        /// <remarks/>
         [EnumMember(Value = "RR")]
         RR,
 
-        /// <remarks/>
         [EnumMember(Value = "RS")]
         RS,
 
-        /// <remarks/>
         [EnumMember(Value = "SC")]
         SC,
 
-        /// <remarks/>
         [EnumMember(Value = "SE")]
         SE,
 
-        /// <remarks/>
         [EnumMember(Value = "SP")]
         SP,
 
-        /// <remarks/>
         [EnumMember(Value = "TO")]
         TO,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TUf
     {
-
-        /// <remarks/>
         [EnumMember(Value = "AC")]
         AC,
 
-        /// <remarks/>
         [EnumMember(Value = "AL")]
         AL,
 
-        /// <remarks/>
         [EnumMember(Value = "AM")]
         AM,
 
-        /// <remarks/>
         [EnumMember(Value = "AP")]
         AP,
 
-        /// <remarks/>
         [EnumMember(Value = "BA")]
         BA,
 
-        /// <remarks/>
         [EnumMember(Value = "CE")]
         CE,
 
-        /// <remarks/>
         [EnumMember(Value = "DF")]
         DF,
 
-        /// <remarks/>
         [EnumMember(Value = "ES")]
         ES,
 
-        /// <remarks/>
         [EnumMember(Value = "GO")]
         GO,
 
-        /// <remarks/>
         [EnumMember(Value = "MA")]
         MA,
 
-        /// <remarks/>
         [EnumMember(Value = "MG")]
         MG,
 
-        /// <remarks/>
         [EnumMember(Value = "MS")]
         MS,
 
-        /// <remarks/>
         [EnumMember(Value = "MT")]
         MT,
 
-        /// <remarks/>
         [EnumMember(Value = "PA")]
         PA,
 
-        /// <remarks/>
         [EnumMember(Value = "PB")]
         PB,
 
-        /// <remarks/>
         [EnumMember(Value = "PE")]
         PE,
 
-        /// <remarks/>
         [EnumMember(Value = "PI")]
         PI,
 
-        /// <remarks/>
         [EnumMember(Value = "PR")]
         PR,
 
-        /// <remarks/>
         [EnumMember(Value = "RJ")]
         RJ,
 
-        /// <remarks/>
         [EnumMember(Value = "RN")]
         RN,
 
-        /// <remarks/>
         [EnumMember(Value = "RO")]
         RO,
 
-        /// <remarks/>
         [EnumMember(Value = "RR")]
         RR,
 
-        /// <remarks/>
         [EnumMember(Value = "RS")]
         RS,
 
-        /// <remarks/>
         [EnumMember(Value = "SC")]
         SC,
 
-        /// <remarks/>
         [EnumMember(Value = "SE")]
         SE,
 
-        /// <remarks/>
         [EnumMember(Value = "SP")]
         SP,
 
-        /// <remarks/>
         [EnumMember(Value = "TO")]
         TO,
 
-        /// <remarks/>
         [EnumMember(Value = "EX")]
         EX,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -903,57 +809,50 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeEmit
     {
+        public string CNPJ { get; set; }
 
-        public string CNPJ;
-
-        public string IE;
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string IEST;
-
-        public string xNome;
+        public string IE { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string xFant;
+        public string IEST { get; set; }
+
+        public string xNome { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string IM;
+        public string xFant { get; set; }
 
-        public string CNAE;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string IM { get; set; }
+
+        public string CNAE { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public TBPeInfBPeEmitCRT CRT;
+        public TBPeInfBPeEmitCRT CRT { get; set; }
 
-        public TEndeEmi enderEmit;
+        public TEndeEmi enderEmit { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string TAR;
+        public string TAR { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeEmitCRT
     {
-
-        /// <remarks/>
         [EnumMember(Value = "1")]
         [XmlEnum("1")]
         SimplesNacional,
 
-        /// <remarks/>
         [EnumMember(Value = "2")]
         [XmlEnum("2")]
         SimplesNacionalMenosRendaBruta,
 
-        /// <remarks/>
         [EnumMember(Value = "3")]
         [XmlEnum("3")]
         RegimeNormal,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -961,35 +860,33 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TEndeEmi
     {
+        public string xLgr { get; set; }
 
-        public string xLgr;
-
-        public string nro;
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string xCpl;
-
-        public string xBairro;
-
-        public string cMun;
-
-        public string xMun;
+        public string nro { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string CEP;
+        public string xCpl { get; set; }
+
+        public string xBairro { get; set; }
+
+        public string cMun { get; set; }
+
+        public string xMun { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string CEP { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public TUf_sem_EX Uf;
+        public TUf_sem_EX UF { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string fone;
+        public string fone { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string email;
+        public string email { get; set; }
 
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -997,7 +894,6 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeComp
     {
-
         public string xNome { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -1010,31 +906,11 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
         public string idEstrangeiro { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string IE;
+        public string IE { get; set; }
 
-        public TEndereco enderComp;
-
-
+        public TEndereco enderComp { get; set; }
     }
 
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
-    [System.Serializable()]
-    [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe", IncludeInSchema = false)]
-    public enum ItemChoiceType
-    {
-
-        /// <remarks/>
-        CNPJ,
-
-        /// <remarks/>
-        CPF,
-
-        /// <remarks/>
-        idEstrangeiro,
-    }
-
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1042,33 +918,37 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TEndereco
     {
+        public string xLgr { get; set; }
 
-        public string xLgr;
+        public string nro { get; set; }
 
-        public string nro;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string xCpl { get; set; }
 
-        public string xCpl;
+        public string xBairro { get; set; }
 
-        public string xBairro;
+        public string cMun { get; set; }
 
-        public string cMun;
+        public string xMun { get; set; }
 
-        public string xMun;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string CEP { get; set; }
 
-        public string CEP;
+        public TUf UF { get; set; }
 
-        public TUf UF;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string cPais { get; set; }
 
-        public string cPais;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string xPais { get; set; }
 
-        public string xPais;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string fone { get; set; }
 
-        public string fone;
-
-        public string email;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string email { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1076,15 +956,13 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeAgencia
     {
+        public string xNome { get; set; }
 
-        public string xNome;
+        public string CNPJ { get; set; }
 
-        public string CNPJ;
-
-        public TEndereco enderAgencia;
+        public TEndereco enderAgencia { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1092,34 +970,31 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeInfBPeSub
     {
+        public string chBPe { get; set; }
 
-        public string chBPe;
-
-        public TTipoSubstituicao tpSub;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TTipoSubstituicao tpSub { get; set; }
 
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TTipoSubstituicao
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "1")]
         [XmlEnum("1")]
-        Item1,
+        Remarcacao,
 
-        /// <remarks/>
+        [EnumMember(Value = "2")]
         [XmlEnum("2")]
-        Item2,
+        Trasferencia,
 
-        /// <remarks/>
+        [EnumMember(Value = "3")]
         [XmlEnum("3")]
-        Item3,
+        TransferenciaERemarcacao,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1127,23 +1002,22 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeInfPassagem
     {
+        public string cLocOrig { get; set; }
 
-        public string cLocOrig;
+        public string xLocOrig { get; set; }
 
-        public string xLocOrig;
+        public string cLocDest { get; set; }
 
-        public string cLocDest;
+        public string xLocDest { get; set; }
 
-        public string xLocDest;
+        public string dhEmb { get; set; }
 
-        public string dhEmb;
+        public string dhValidade { get; set; }
 
-        public string dhValidade;
-
-        public TBPeInfBPeInfPassagemInfPassageiro infPassageiro;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeInfPassagemInfPassageiro infPassageiro { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1151,53 +1025,55 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeInfPassagemInfPassageiro
     {
+        public string xNome { get; set; }
 
-        public string xNome;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string CPF { get; set; }
 
-        public string cPF;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TDoc tpDoc { get; set; }
 
-        public TDoc tpDoc;
+        public string nDoc { get; set; }
 
-        public string nDoc;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string xDoc { get; set; }
 
-        public string xDoc;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string dNasc { get; set; }
 
-        public string dNasc;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string fone { get; set; }
 
-        public string fone;
-
-        public string email;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string email { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TDoc
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "1")]
         [XmlEnum("1")]
-        Item1,
+        RG,
 
-        /// <remarks/>
+        [EnumMember(Value = "2")]
         [XmlEnum("2")]
-        Item2,
+        TituloEleitor,
 
-        /// <remarks/>
+        [EnumMember(Value = "3")]
         [XmlEnum("3")]
-        Item3,
+        Passaporte,
 
-        /// <remarks/>
+        [EnumMember(Value = "4")]
         [XmlEnum("4")]
-        Item4,
+        CNH,
 
-        /// <remarks/>
+        [EnumMember(Value = "5")]
         [XmlEnum("5")]
-        Item5,
+        Outros,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1205,144 +1081,144 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeInfViagem
     {
+        public string cPercurso { get; set; }
 
-        public string cPercurso;
+        public string xPercurso { get; set; }
 
-        public string xPercurso;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeInfViagemTpViagem tpViagem { get; set; }
 
-        public TBPeInfBPeInfViagemTpViagem tpViagem;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeInfViagemTpServ tpServ { get; set; }
 
-        public TBPeInfBPeInfViagemTpServ tpServ;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeInfViagemTpAcomodacao tpAcomodacao { get; set; }
 
-        public TBPeInfBPeInfViagemTpAcomodacao tpAcomodacao;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeInfViagemTpTrecho tpTrecho { get; set; }
 
-        public TBPeInfBPeInfViagemTpTrecho tpTrecho;
+        public string dhViagem { get; set; }
 
-        public string dhViagem;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string dhConexao { get; set; }
 
-        public string dhConexao;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string prefixo { get; set; }
 
-        public string prefixo;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string poltrona { get; set; }
 
-        public string poltrona;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string plataforma { get; set; }
 
-        public string plataforma;
-
-        public TBPeInfBPeInfViagemInfTravessia infTravessia;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeInfViagemInfTravessia infTravessia { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeInfViagemTpViagem
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "00")]
         [XmlEnum("00")]
-        Item00,
+        Regular,
 
-        /// <remarks/>
+        [EnumMember(Value = "01")]
         [XmlEnum("01")]
-        Item01,
+        Extra,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeInfViagemTpServ
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "1")]
         [XmlEnum("1")]
-        Item1,
+        ConvencionalComSanitario,
 
-        /// <remarks/>
+        [EnumMember(Value = "2")]
         [XmlEnum("2")]
-        Item2,
+        ConvencionalSemSanitario,
 
-        /// <remarks/>
+        [EnumMember(Value = "3")]
         [XmlEnum("3")]
-        Item3,
+        Semileito,
 
-        /// <remarks/>
+        [EnumMember(Value = "4")]
         [XmlEnum("4")]
-        Item4,
+        LeitoComArCondicionado,
 
-        /// <remarks/>
+        [EnumMember(Value = "5")]
         [XmlEnum("5")]
-        Item5,
+        LeitoSemArCondicionado,
 
-        /// <remarks/>
+        [EnumMember(Value = "6")]
         [XmlEnum("6")]
-        Item6,
+        Executivo,
 
-        /// <remarks/>
+        [EnumMember(Value = "7")]
         [XmlEnum("7")]
-        Item7,
+        Semiurbano,
 
-        /// <remarks/>
+        [EnumMember(Value = "8")]
         [XmlEnum("8")]
-        Item8,
+        Longitudinal,
 
-        /// <remarks/>
+        [EnumMember(Value = "9")]
         [XmlEnum("9")]
-        Item9,
+        Travessia,
 
+        [EnumMember(Value = "10")]
         [XmlEnum("10")]
-        Item10,
+        Cama,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeInfViagemTpAcomodacao
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "1")]
         [XmlEnum("1")]
-        Item1,
+        Assento_Poltrona,
 
-        /// <remarks/>
+        [EnumMember(Value = "2")]
         [XmlEnum("2")]
-        Item2,
+        Rede,
 
-        /// <remarks/>
+        [EnumMember(Value = "3")]
         [XmlEnum("3")]
-        Item3,
+        RedeComArCondicionado,
 
-        /// <remarks/>
+        [EnumMember(Value = "4")]
         [XmlEnum("4")]
-        Item4,
+        Cabine,
 
-        /// <remarks/>
+        [EnumMember(Value = "5")]
         [XmlEnum("5")]
-        Item5,
+        Outros,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeInfViagemTpTrecho
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "1")]
         [XmlEnum("1")]
-        Item1,
+        Normal,
 
-        /// <remarks/>
+        [EnumMember(Value = "2")]
         [XmlEnum("2")]
-        Item2,
+        TrecoInicial,
 
-        /// <remarks/>
+        [EnumMember(Value = "3")]
         [XmlEnum("3")]
-        Item3,
+        Conexao,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1350,162 +1226,157 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeInfViagemInfTravessia
     {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeInfViagemInfTravessiaTpVeiculo tpVeiculo { get; set; }
 
-        public TBPeInfBPeInfViagemInfTravessiaTpVeiculo tpVeiculo;
-
-        public TBPeInfBPeInfViagemInfTravessiaSitVeiculo sitVeiculo;
-
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeInfViagemInfTravessiaSitVeiculo sitVeiculo { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeInfViagemInfTravessiaTpVeiculo
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "01")]
         [XmlEnum("01")]
-        Item01,
+        Motocicleta,
 
-        /// <remarks/>
+        [EnumMember(Value = "02")]
         [XmlEnum("02")]
-        Item02,
+        Automovel,
 
-        /// <remarks/>
+        [EnumMember(Value = "03")]
         [XmlEnum("03")]
-        Item03,
+        AutomovelComReboque,
 
-        /// <remarks/>
+        [EnumMember(Value = "04")]
         [XmlEnum("04")]
-        Item04,
+        Caminhote,
 
-        /// <remarks/>
+        [EnumMember(Value = "05")]
         [XmlEnum("05")]
-        Item05,
+        CaminhoteComReboque,
 
-        /// <remarks/>
+        [EnumMember(Value = "06")]
         [XmlEnum("06")]
-        Item06,
+        MicroOnibus,
 
-        /// <remarks/>
+        [EnumMember(Value = "07")]
         [XmlEnum("07")]
-        Item07,
+        Van,
 
-        /// <remarks/>
+        [EnumMember(Value = "08")]
         [XmlEnum("08")]
-        Item08,
+        Onibus_2ou3Eixos,
 
-        /// <remarks/>
+        [EnumMember(Value = "09")]
         [XmlEnum("09")]
-        Item09,
+        Onibus_4Eixos,
 
-        /// <remarks/>
+        [EnumMember(Value = "10")]
         [XmlEnum("10")]
-        Item10,
+        Caminhao3por4,
 
-        /// <remarks/>
+        [EnumMember(Value = "11")]
         [XmlEnum("11")]
-        Item11,
+        CaminhaoToco,
 
-        /// <remarks/>
+        [EnumMember(Value = "12")]
         [XmlEnum("12")]
-        Item12,
+        CaminhaoTruck,
 
-        /// <remarks/>
+        [EnumMember(Value = "13")]
         [XmlEnum("13")]
-        Item13,
+        Carreta,
 
-        /// <remarks/>
+        [EnumMember(Value = "14")]
         [XmlEnum("14")]
-        Item14,
+        BiTrem,
 
-        /// <remarks/>
+        [EnumMember(Value = "15")]
         [XmlEnum("15")]
-        Item15,
+        RodoTrem_9Eixos,
 
-        /// <remarks/>
+        [EnumMember(Value = "16")]
         [XmlEnum("16")]
-        Item16,
+        RomeuEJulieta_7Eixos,
 
-        /// <remarks/>
+        [EnumMember(Value = "17")]
         [XmlEnum("17")]
-        Item17,
+        Jamanta_6Eixos,
 
-        /// <remarks/>
+        [EnumMember(Value = "18")]
         [XmlEnum("18")]
-        Item18,
+        Jamanta_5Eixos,
 
-        /// <remarks/>
+        [EnumMember(Value = "19")]
         [XmlEnum("19")]
-        Item19,
+        Jamanta_4Eixos,
 
-        /// <remarks/>
+        [EnumMember(Value = "20")]
         [XmlEnum("20")]
-        Item20,
+        TratorEsteira,
 
-        /// <remarks/>
+        [EnumMember(Value = "21")]
         [XmlEnum("21")]
-        Item21,
+        PaMecanica,
 
-        /// <remarks/>
+        [EnumMember(Value = "22")]
         [XmlEnum("22")]
-        Item22,
+        Patrola,
 
-        /// <remarks/>
+        [EnumMember(Value = "23")]
         [XmlEnum("23")]
-        Item23,
+        TratorPneuGrande,
 
-        /// <remarks/>
+        [EnumMember(Value = "24")]
         [XmlEnum("24")]
-        Item24,
+        TratorPneuComReboque,
 
-        /// <remarks/>
+        [EnumMember(Value = "25")]
         [XmlEnum("25")]
-        Item25,
+        TratorPneuSemReboque,
 
-        /// <remarks/>
+        [EnumMember(Value = "26")]
         [XmlEnum("26")]
-        Item26,
+        Carroca,
 
-        /// <remarks/>
+        [EnumMember(Value = "27")]
         [XmlEnum("27")]
-        Item27,
+        Mobilete,
 
-        /// <remarks/>
+        [EnumMember(Value = "28")]
         [XmlEnum("28")]
-        Item28,
+        Bicicleta,
 
-        /// <remarks/>
+        [EnumMember(Value = "29")]
         [XmlEnum("29")]
-        Item29,
+        Passageiro,
 
-        /// <remarks/>
+        [EnumMember(Value = "99")]
         [XmlEnum("99")]
-        Item99,
+        Outros,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeInfViagemInfTravessiaSitVeiculo
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "1")]
         [XmlEnum("1")]
-        Item1,
+        Vazio,
 
-        /// <remarks/>
+        [EnumMember(Value = "2")]
         [XmlEnum("2")]
-        Item2,
+        Carregado,
 
-        /// <remarks/>
+        [EnumMember(Value = "3")]
         [XmlEnum("3")]
-        Item3,
+        NaoSeAplica,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1513,79 +1384,77 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeInfValorBPe
     {
+        public string vBP { get; set; }
 
-        public string vBP;
+        public string vDesconto { get; set; }
 
-        public string vDesconto;
+        public string vPgto { get; set; }
 
-        public string vPgto;
+        public string vTroco { get; set; }
 
-        public string vTroco;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeInfValorBPeTpDesconto? tpDesconto{ get; set; }
 
-        public TBPeInfBPeInfValorBPeTpDesconto tpDesconto;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string xDesconto{ get; set; }
 
-        public bool tpDescontoSpecified;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string cDesconto{ get; set; }
 
-        public string xDesconto;
-
-        public string cDesconto;
-
-        public TBPeInfBPeInfValorBPeComp[] comp;
+        public List<TBPeInfBPeInfValorBPeComp> Comp{ get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeInfValorBPeTpDesconto
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "01")]
         [XmlEnum("01")]
-        Item01,
+        TarifaPromocional,
 
-        /// <remarks/>
+        [EnumMember(Value = "02")]
         [XmlEnum("02")]
-        Item02,
+        Idoso,
 
-        /// <remarks/>
+        [EnumMember(Value = "03")]
         [XmlEnum("03")]
-        Item03,
+        Crianca,
 
-        /// <remarks/>
+        [EnumMember(Value = "04")]
         [XmlEnum("04")]
-        Item04,
+        Deficiente,
 
-        /// <remarks/>
+        [EnumMember(Value = "05")]
         [XmlEnum("05")]
-        Item05,
+        Estudante,
 
-        /// <remarks/>
+        [EnumMember(Value = "06")]
         [XmlEnum("06")]
-        Item06,
+        AnimalDomestico,
 
-        /// <remarks/>
+        [EnumMember(Value = "07")]
         [XmlEnum("07")]
-        Item07,
+        AcordoColetivo,
 
-        /// <remarks/>
+        [EnumMember(Value = "08")]
         [XmlEnum("08")]
-        Item08,
+        ProfissinalEmDeslocamento,
 
-        /// <remarks/>
+        [EnumMember(Value = "09")]
         [XmlEnum("09")]
-        Item09,
+        ProfissionalDaEmpresa,
 
-        /// <remarks/>
+        [EnumMember(Value = "10")]
         [XmlEnum("10")]
-        Item10,
+        Jovem,
 
-        /// <remarks/>
+        [EnumMember(Value = "99")]
         [XmlEnum("99")]
-        Item99,
+        Outros,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1593,9 +1462,9 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeInfValorBPeComp
     {
+        public string vComp{ get; set; }
 
-        public string vComp;
-
+        [JsonConverter(typeof(StringEnumConverter))]
         public TBPeInfBPeInfValorBPeCompTpComp tpComp { get; set; }
     }
 
@@ -1605,37 +1474,35 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPeInfValorBPeCompTpComp
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "01")]
         [XmlEnum("01")]
-        Item01,
+        Tarifa,
 
-        /// <remarks/>
+        [EnumMember(Value = "02")]
         [XmlEnum("02")]
-        Item02,
+        Pedagio,
 
-        /// <remarks/>
+        [EnumMember(Value = "03")]
         [XmlEnum("03")]
-        Item03,
+        TaxaEmbarque,
 
-        /// <remarks/>
+        [EnumMember(Value = "04")]
         [XmlEnum("04")]
-        Item04,
+        Seguro,
 
-        /// <remarks/>
+        [EnumMember(Value = "05")]
         [XmlEnum("05")]
-        Item05,
+        TMR,
 
-        /// <remarks/>
+        [EnumMember(Value = "06")]
         [XmlEnum("06")]
-        Item06,
+        SVI,
 
-        /// <remarks/>
+        [EnumMember(Value = "99")]
         [XmlEnum("99")]
-        Item99,
+        Outros,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1643,213 +1510,190 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeImp
     {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string vTotTrib { get; set; }
 
-        public TImp iCMS;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string infAdFisco { get; set; }
 
-        public string vTotTrib;
+        public TBPeInfBPeImpICMS ICMS { get; set; }
 
-        public string infAdFisco;
-
-        public TBPeInfBPeImpICMSUFFim iCMSUFFim;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeImpICMSUFFim ICMSUFFim { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.ComponentModel.DesignerCategory("code")]
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public partial class TImp
+    public partial class TBPeInfBPeImpICMS
     {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeImpICMSICMS00 ICMS00 { get; set; }
 
-        public object item;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeImpICMSICMS20 ICMS20 { get; set; }
 
-        /// <remarks/>
-        [XmlElement("ICMS00", typeof(TImpICMS00))]
-        [XmlElement("ICMS20", typeof(TImpICMS20))]
-        [XmlElement("ICMS45", typeof(TImpICMS45))]
-        [XmlElement("ICMS90", typeof(TImpICMS90))]
-        [XmlElement("ICMSSN", typeof(TImpICMSSN))]
-        public object Item
-        {
-            get
-            {
-                return item;
-            }
-            set
-            {
-                item = value;
-            }
-        }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeImpICMSICMS45 ICMS45 { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeImpICMSICMS90 ICMS90 { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPeImpICMSICMSSN ICMSSN { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.ComponentModel.DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public partial class TImpICMS00
+    public partial class TBPeInfBPeImpICMSICMS00
     {
-
-        public TImpICMS00CST cST;
-
-        public string vBC;
-
-        public string pICMS;
-
-        public string vICMS;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeImpICMSICMS00CST CST { get; set; }
+        public string vBC { get; set; }
+        public string pICMS { get; set; }
+        public string vICMS { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public enum TImpICMS00CST
+    public enum TBPeInfBPeImpICMSICMS00CST
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "00")]
         [XmlEnum("00")]
-        Item00,
+        CST00,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.ComponentModel.DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public partial class TImpICMS20
+    public partial class TBPeInfBPeImpICMSICMS20
     {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeImpICMSICMS20CST CST { get; set; }
 
-        public TImpICMS20CST cST;
+        public string pRedBC { get; set; }
 
-        public string pRedBC;
+        public string vBC { get; set; }
 
-        public string vBC;
+        public string pICMS { get; set; }
 
-        public string pICMS;
-
-        public string vICMS;
+        public string vICMS { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public enum TImpICMS20CST
+    public enum TBPeInfBPeImpICMSICMS20CST
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "20")]
         [XmlEnum("20")]
-        Item20,
+        CST20,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.ComponentModel.DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public partial class TImpICMS45
+    public partial class TBPeInfBPeImpICMSICMS45
     {
-
-        public TImpICMS45CST cST;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeImpICMSICMS45CST CST;
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public enum TImpICMS45CST
+    public enum TBPeInfBPeImpICMSICMS45CST
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "40")]
         [XmlEnum("40")]
-        Item40,
+        CST40,
 
-        /// <remarks/>
+        [EnumMember(Value = "41")]
         [XmlEnum("41")]
-        Item41,
+        CST41,
 
-        /// <remarks/>
+        [EnumMember(Value = "51")]
         [XmlEnum("51")]
-        Item51,
+        CST51,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.ComponentModel.DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public partial class TImpICMS90
+    public partial class TBPeInfBPeImpICMSICMS90
     {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeImpICMSICMS90CST CST { get; set; }
 
-        public TImpICMS90CST cST;
+        public string vBC { get; set; }
 
-        public string pRedBC;
+        public string pICMS { get; set; }
 
-        public string vBC;
+        public string vICMS { get; set; }
 
-        public string pICMS;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string pRedBC { get; set; }
 
-        public string vICMS;
-
-        public string vCred;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string vCred { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public enum TImpICMS90CST
+    public enum TBPeInfBPeImpICMSICMS90CST
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "90")]
         [XmlEnum("90")]
-        Item90,
+        CST90,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
     [System.ComponentModel.DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public partial class TImpICMSSN
+    public partial class TBPeInfBPeImpICMSICMSSN
     {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeImpICMSICMSSNCST CST { get; set; }
 
-        public TImpICMSSNCST cST;
-
-        public TImpICMSSNIndSN indSN;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPeImpICMSICMSSNIndSN indSN { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public enum TImpICMSSNCST
+    public enum TBPeInfBPeImpICMSICMSSNCST
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "90")]
         [XmlEnum("90")]
-        Item90,
+        CST90,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
-    public enum TImpICMSSNIndSN
+    public enum TBPeInfBPeImpICMSICMSSNIndSN
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "1")]
         [XmlEnum("1")]
-        Item1,
+        Sim,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1857,23 +1701,15 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeImpICMSUFFim
     {
-
-        public string vBCUFFim;
-
-        public string pFCPUFFim;
-
-        public string pICMSUFFim;
-
-        public string pICMSInter;
-
-        public string vFCPUFFim;
-
-        public string vICMSUFFim;
-
-        public string vICMSUFIni;
+        public string vBCUFFim { get; set; }
+        public string pFCPUFFim { get; set; }
+        public string pICMSUFFim { get; set; }
+        public string pICMSInter { get; set; }
+        public string vFCPUFFim { get; set; }
+        public string vICMSUFFim { get; set; }
+        public string vICMSUFIni { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1881,51 +1717,51 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPePag
     {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPePagTPag tPag { get; set; }
 
-        public TBPeInfBPePagTPag tPag;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string xPag { get; set; }
 
-        public string xPag;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string nDocPag { get; set; }
 
-        public string nDocPag;
+        public string vPag { get; set; }
 
-        public string vPag;
-
-        public TBPeInfBPePagCard card;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public TBPeInfBPePagCard card { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPePagTPag
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "01")]
         [XmlEnum("01")]
-        Item01,
+        Dinheiro,
 
-        /// <remarks/>
+        [EnumMember(Value = "02")]
         [XmlEnum("02")]
-        Item02,
+        Cheque,
 
-        /// <remarks/>
+        [EnumMember(Value = "03")]
         [XmlEnum("03")]
-        Item03,
+        CartaoDeCredito,
 
-        /// <remarks/>
+        [EnumMember(Value = "04")]
         [XmlEnum("04")]
-        Item04,
+        CretaoDeDebito,
 
-        /// <remarks/>
+        [EnumMember(Value = "05")]
         [XmlEnum("05")]
-        Item05,
+        ValeTransporte,
 
-        /// <remarks/>
+        [EnumMember(Value = "99")]
         [XmlEnum("99")]
-        Item99,
+        Outros,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -1933,83 +1769,84 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPePagCard
     {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPePagCardTpIntegra tpIntegra { get; set; }
 
-        public TBPeInfBPePagCardTpIntegra tpIntegra;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string CNPJ { get; set; }
 
-        public string cNPJ;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TBPeInfBPePagCardTBand? tBand { get; set; }
 
-        public TBPeInfBPePagCardTBand tBand;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string xBand { get; set; }
 
-        [XmlIgnore()]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string cAut { get; set; }
 
-        public bool tBandSpecified;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string nsuTrans { get; set; }
 
-        public string xBand;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string nsuHost { get; set; }
 
-        public string cAut;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string nParcelas { get; set; }
 
-        public string nsuTrans;
-
-        public string nsuHost;
-
-        public string nParcelas;
-
-        public string infAdCard;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string infAdCard { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPePagCardTpIntegra
     {
-
-        /// <remarks/>
+        [EnumMember(Value = "1")]
         [XmlEnum("1")]
-        Item1,
+        IntegradoComSistemaDeAutomacao,
 
-        /// <remarks/>
+        [EnumMember(Value = "2")]
         [XmlEnum("2")]
-        Item2,
+        NaoIntegradoComSistemaDeAutomacao
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public enum TBPeInfBPePagCardTBand
     {
 
-        /// <remarks/>
+        [EnumMember(Value = "01")]
         [XmlEnum("01")]
-        Item01,
+        Visa,
 
-        /// <remarks/>
+        [EnumMember(Value = "02")]
         [XmlEnum("02")]
-        Item02,
+        MasterCard,
 
-        /// <remarks/>
+        [EnumMember(Value = "03")]
         [XmlEnum("03")]
-        Item03,
+        AmericanExpress,
 
-        /// <remarks/>
+        [EnumMember(Value = "04")]
         [XmlEnum("04")]
-        Item04,
+        Sorocred,
 
-        /// <remarks/>
+        [EnumMember(Value = "05")]
         [XmlEnum("05")]
-        Item05,
+        Elo,
 
-        /// <remarks/>
+        [EnumMember(Value = "06")]
         [XmlEnum("06")]
-        Item06,
+        Diners,
 
-        /// <remarks/>
+        [EnumMember(Value = "99")]
         [XmlEnum("99")]
-        Item99,
+        Outros,
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -2017,57 +1854,13 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeAutXML
     {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string CNPJ { get; set; }
 
-        public string item;
-
-        public ItemChoiceType1 itemElementName;
-
-        /// <remarks/>
-        [XmlElement("CNPJ", typeof(string))]
-        [XmlElement("CPF", typeof(string))]
-        [XmlChoiceIdentifier("ItemElementName")]
-        public string Item
-        {
-            get
-            {
-                return item;
-            }
-            set
-            {
-                item = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlIgnore()]
-        public ItemChoiceType1 ItemElementName
-        {
-            get
-            {
-                return itemElementName;
-            }
-            set
-            {
-                itemElementName = value;
-            }
-        }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string CPF { get; set; }
     }
 
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
-    [System.Serializable()]
-    [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe", IncludeInSchema = false)]
-    public enum ItemChoiceType1
-    {
-
-        /// <remarks/>
-        CNPJ,
-
-        /// <remarks/>
-        CPF,
-    }
-
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -2075,13 +1868,13 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeInfAdic
     {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string infAdFisco { get; set; }
 
-        public string infAdFisco;
-
-        public string infCpl;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string infCpl { get; set; }
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -2089,23 +1882,23 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TRespTec
     {
+        public string CNPJ { get; set; }
 
-        public string cNPJ;
+        public string xContato { get; set; }
 
-        public string xContato;
+        public string email { get; set; }
 
-        public string email;
+        public string fone { get; set; }
 
-        public string fone;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string idCSRT { get; set; }
 
-        public string idCSRT;
-
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         [XmlElement(DataType = "base64Binary")]
-        public byte[] hashCSRT;
+        public byte[] hashCSRT { get; set; }
 
     }
 
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
     [System.Diagnostics.DebuggerStepThrough()]
@@ -2113,10 +1906,10 @@ namespace NSSuiteCoreCSharp.src.Requisicoes.BPe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/bpe")]
     public partial class TBPeInfBPeSupl
     {
+        public string qrCodBPe { get; set; }
 
-        public string qrCodBPe;
-
-        public string boardPassBPe;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string boardPassBPe { get; set; }
 
     }
 }

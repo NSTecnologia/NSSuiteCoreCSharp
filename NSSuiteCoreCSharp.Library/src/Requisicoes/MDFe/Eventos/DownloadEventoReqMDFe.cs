@@ -1,6 +1,6 @@
-﻿using NSSuiteCoreCSharp.Commons;
+﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Eventos;
-using NSSuiteCoreCSharp.Respostas._Genéricas;
 
 namespace NSSuiteCSharpLib.Requisicoes.MDFe
 {

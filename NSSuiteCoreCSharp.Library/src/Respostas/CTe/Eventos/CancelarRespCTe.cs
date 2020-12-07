@@ -5,6 +5,6 @@ namespace NSSuiteCSharpLib.Respostas.CTe
 {
     public class CancelarRespCTe
     {
-        public new RetEventoCTe retEvento { get; set; }
+        public RetEventoCTe retEvento { get; set; }
     }
 }

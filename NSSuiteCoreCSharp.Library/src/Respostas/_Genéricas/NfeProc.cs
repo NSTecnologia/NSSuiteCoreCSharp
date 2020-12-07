@@ -1,5 +1,4 @@
-﻿
-namespace NSSuiteCSharpLib.Respostas._Genéricas
+﻿namespace NSSuiteCoreCSharp.Library.src.Respostas._Genérica
 {
     public class NfeProc
     {

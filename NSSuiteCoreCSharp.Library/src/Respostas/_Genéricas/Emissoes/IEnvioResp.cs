@@ -1,4 +1,5 @@
-﻿using NSSuiteCoreCSharp.Respostas._Genéricas;
+﻿using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
+using NSSuiteCoreCSharp.Respostas._Genéricas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,8 @@ namespace NSSuiteCSharpLib.Respostas._Genéricas.Emissoes
 {
     public interface IEnvioResp : IResposta
     {
-        string status { get; set; }
-        string motivo { get; set; }
         string xMotivo { get; set; }
         List<string> erros { get; set; }
         Erro erro { get; set; }
-        
     }
 }

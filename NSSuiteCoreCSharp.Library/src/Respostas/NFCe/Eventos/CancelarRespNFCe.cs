@@ -5,6 +5,6 @@ namespace NSSuiteCSharpLib.Respostas.NFCe
 {
     public class CancelarRespNFCe 
     { 
-        public new RetEventoNFCe retEvento { get; set; }
+        public RetEventoNFCe retEvento { get; set; }
     }
 }

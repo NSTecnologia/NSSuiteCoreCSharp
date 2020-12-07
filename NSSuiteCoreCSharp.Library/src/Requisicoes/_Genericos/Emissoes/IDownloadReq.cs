@@ -1,8 +1,7 @@
 ﻿using NSSuiteCoreCSharp.Requisicoes._Genericos.Emissoes;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes;
-using static NSSuiteCoreCSharp.Commons.SolicitavelNaAPI;
 
-namespace NSSuiteCSharpLib.Requisicoes._Genericos.Emissoes
+namespace NSSuiteCoreCSharp.Library.src.Requisicoes._Genericos.Emissoes
 {
     public interface IDownloadReq : IRequisicao
     {

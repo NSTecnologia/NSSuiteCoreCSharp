@@ -1,11 +1,10 @@
 ﻿
 using Newtonsoft.Json;
-using NSSuiteCoreCSharp.Commons;
+using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Eventos;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes;
-using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas.BPe.Eventos;
-using NSSuiteCoreCSharp.src.Commons;
 using System.Runtime.Serialization;
 
 namespace NSSuiteCSharpLib.Requisicoes.BPe.Eventos
@@ -23,7 +22,6 @@ namespace NSSuiteCSharpLib.Requisicoes.BPe.Eventos
             var resposta = EnviaConteudoParaAPI(this, Endpoints.BPeDownloadEvento);
             return JsonConvert.DeserializeObject<DownloadEventoRespBPe>(resposta);
         }
-
     }
     public enum TipoEventoBPe
     {

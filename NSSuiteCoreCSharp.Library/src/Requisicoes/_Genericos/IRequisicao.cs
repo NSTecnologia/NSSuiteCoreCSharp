@@ -1,4 +1,4 @@
-﻿using NSSuiteCoreCSharp.Respostas._Genéricas;
+﻿using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 
 namespace NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes
 {

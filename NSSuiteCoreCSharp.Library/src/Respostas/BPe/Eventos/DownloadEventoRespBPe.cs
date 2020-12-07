@@ -1,4 +1,4 @@
-﻿using NSSuiteCoreCSharp.Commons;
+﻿using NSSuiteCoreCSharp.Library.src.Commons;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas._Genéricas.Emissoes;
@@ -19,6 +19,7 @@ namespace NSSuiteCoreCSharp.Respostas.BPe.Eventos
         public Erro erro { get; set; }
         public string xml { get; set; }
         public string pdf { get; set; }
+
         public void ValidarESalvar(string caminho, bool exibirPDF)
         {
             if (string.IsNullOrEmpty(this.xml))

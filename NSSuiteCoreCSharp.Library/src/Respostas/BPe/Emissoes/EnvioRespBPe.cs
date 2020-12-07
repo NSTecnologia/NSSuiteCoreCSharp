@@ -1,4 +1,5 @@
-﻿using NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes;
+﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCSharpLib.Genericos.Exceptions;
 using NSSuiteCSharpLib.Respostas._Genéricas.Emissoes;
@@ -24,6 +25,7 @@ namespace NSSuiteCoreCSharp.thiss.BPe.Emissoes
                 case "200":
                 case "-6":
                     {
+                        Util.GravarLinhaLog("[ENVIO_BPE_COM_SUCESSO]");
                         break;
                     }
                 case "-4":

@@ -1,5 +1,5 @@
-﻿using NSSuiteCoreCSharp.Respostas._Genéricas;
-using NSSuiteCSharpLib.Respostas._Genéricas;
+﻿using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
+using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCSharpLib.Respostas._Genéricas.Emissoes;
 using System.Collections.Generic;
 public class EmitirRespNFCe : IEnvioResp

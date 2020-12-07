@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NSSuiteCoreCSharp.Respostas._Genéricas
+﻿namespace NSSuiteCoreCSharp.Library.src.Respostas._Genéricas
 {
     public interface IResposta
     {

@@ -1,28 +1,28 @@
 ﻿using Newtonsoft.Json;
-using NSSuiteCoreCSharp.Commons;
-using NSSuiteCoreCSharp.Requisicoes._Genericos.Emissoes;
-using NSSuiteCoreCSharp.Respostas._Genéricas;
-using NSSuiteCoreCSharp.src.Commons;
-using NSSuiteCSharpLib.Requisicoes._Genericos.Emissoes;
-using NSSuiteCSharpLib.Respostas._Genéricas;
+using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Requisicoes._Genericos.Emissoes;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCSharpLib.Respostas.BPe.Emissoes;
 
-namespace NSSuiteCSharpLib.Requisicoes.BPe
+namespace NSSuiteCoreCSharp.Library.src.Requisicoes.BPe.Emissoes
 {
     public class ConsStatusProcessamentoReqBPe : SolicitavelNaAPI, IConsStatusProcessamentoReq
     {
-        [JsonProperty("CNPJ")]
+        [JsonProperty("CNPJ", Required = Required.Always)]
         public string CNPJ { get; set; }
 
-        [JsonProperty("nsNRec")]
+        [JsonProperty("nsNRec", Required = Required.Always)]
         public string nsNRec { get; set; }
 
-        [JsonProperty("tpAmb")]
+        [JsonProperty("tpAmb", Required = Required.Always)]
         public int tpAmb { get; set; }
 
         public IResposta Envia()
         {
+            Util.GravarLinhaLog("[CONSULTA PROCESSAMENTO BPE INICIO]");
             string resposta = EnviaConteudoParaAPI(this, Endpoints.BPeConsStatusProcessamento);
+            Util.GravarLinhaLog("[CONSULTA PROCESSAMENTO BPE FIM]");
+
             return JsonConvert.DeserializeObject<ConsStatusProcessamentoRespBPe>(resposta);
         }
     }

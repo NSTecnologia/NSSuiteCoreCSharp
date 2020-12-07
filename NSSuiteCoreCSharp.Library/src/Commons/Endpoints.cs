@@ -1,4 +1,4 @@
-﻿namespace NSSuiteCoreCSharp.src.Commons
+﻿namespace NSSuiteCoreCSharp.Library.src.Commons
 {
     internal class Endpoints
     {

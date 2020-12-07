@@ -1,13 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.Xml;
-using System.Windows;
 using System.Xml;
 using System.Xml.Serialization;
-using static NSSuiteCoreCSharp.Commons.SolicitavelNaAPI;
 
-namespace NSSuiteCoreCSharp.Commons
+namespace NSSuiteCoreCSharp.Library.src.Commons
 {
     public static class Util
     {
@@ -86,12 +82,6 @@ namespace NSSuiteCoreCSharp.Commons
             string localParaSalvar = $"{caminho + nome}.xml";
             string ConteudoSalvar = xml.Replace(@"\""", "");
             File.WriteAllText(localParaSalvar, ConteudoSalvar);
-            
-            //catch (UnauthorizedAccessException ex)
-            //{
-            //    MessageBox.Show("Seu documento foi autorizado com sucesso, " +
-            //        $"porem não pode ser salvo em {caminho}. Motivo {ex.Message}");
-            //}
         }
         public static void ExibePDFSemSalvar()
         {

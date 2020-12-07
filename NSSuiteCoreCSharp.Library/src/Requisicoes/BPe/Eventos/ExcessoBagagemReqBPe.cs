@@ -1,17 +1,15 @@
 ﻿using Newtonsoft.Json;
-using NSSuiteCoreCSharp.Commons;
-using NSSuiteCoreCSharp.Requisicoes._Genericos.Eventos;
+using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
+using NSSuiteCoreCSharp.Library.src.Requisicoes.BPe.Eventos;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes;
-using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas.BPe.Eventos;
-using NSSuiteCoreCSharp.src.Commons;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NSSuiteCoreCSharp.Requisicoes.BPe.Eventos
 {
-    public class ExcessoBagagemReqBPe : SolicitavelNaAPI, IRequisicao, IEventoSincronoReqBPe
+    public class ExcessoBagagemReqBPe : SolicitavelNaAPI, IRequisicao, IEventoSincronoBPe
     {
         public string chBPe { get; set; }
         public string nProt { get; set; }
@@ -29,7 +27,18 @@ namespace NSSuiteCoreCSharp.Requisicoes.BPe.Eventos
         public void EnvioSincrono(string caminhoSalvar)
         {
             var excessoBagagemResposta = this.Envia() as ExcessoBagagemRespBPe;
-            excessoBagagemResposta.ValidaESalvaXML(caminhoSalvar);
+            excessoBagagemResposta.Valida();
+
+            string xml = excessoBagagemResposta.retEvento.xml;
+            string nome = $"110117{excessoBagagemResposta.retEvento.chBPe}-procBPe";           
+            try
+            {
+                Util.SalvarXML(xml, caminhoSalvar, nome);
+            }
+            catch (Exception e)
+            {
+                throw new SalvarDocumentosException(e.Message);
+            }
         }
     }
 }

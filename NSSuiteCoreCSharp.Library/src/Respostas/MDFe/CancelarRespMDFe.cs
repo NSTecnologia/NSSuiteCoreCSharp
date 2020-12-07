@@ -5,6 +5,6 @@ namespace NSSuiteCSharpLib.Respostas.MDFe
 {
     public class CancelarRespMDFe
     {
-        public new RetEventoMDFe retEvento { get; set; }
+        public RetEventoMDFe retEvento { get; set; }
     }
 }

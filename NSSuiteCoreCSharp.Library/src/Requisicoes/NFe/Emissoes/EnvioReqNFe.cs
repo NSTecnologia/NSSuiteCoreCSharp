@@ -1,18 +1,13 @@
-﻿
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using NSSuiteCoreCSharp.Commons;
+using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Emissoes;
-using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas.NFe.Emissoes;
-using NSSuiteCoreCSharp.src.Commons;
-using NSSuiteCSharpLib.Requisicoes._Genericos.Emissoes;
-using NSSuiteCSharpLib.Respostas._Genéricas.Emissoes;
 
 namespace NSSuiteCoreCSharp.Requisicoes.NFe.Emissoes
 {

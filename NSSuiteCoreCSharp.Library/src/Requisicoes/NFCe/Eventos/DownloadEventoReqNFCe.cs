@@ -1,8 +1,8 @@
 ﻿
 using Newtonsoft.Json;
-using NSSuiteCoreCSharp.Commons;
+using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Eventos;
-using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCSharpLib.Genericos.Exceptions;
 using NSSuiteCSharpLib.Requisicoes.NFCe;
 using NSSuiteCSharpLib.Respostas.NFCe;

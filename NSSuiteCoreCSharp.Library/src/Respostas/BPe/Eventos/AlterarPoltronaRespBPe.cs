@@ -1,11 +1,12 @@
-﻿using NSSuiteCoreCSharp.Commons;
+﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCSharpLib.Genericos.Exceptions;
 using NSSuiteCSharpLib.Respostas.BPe;
 
 namespace NSSuiteCoreCSharp.Respostas.BPe.Eventos
 {
-    public class AlterarPoltronaRespBPe : IResposta, IEventoSalvoRespBPe
+    public class AlterarPoltronaRespBPe : IEventoSalvoResp
     {
         public string status { get; set; }
         public string motivo { get; set; }
@@ -26,7 +27,7 @@ namespace NSSuiteCoreCSharp.Respostas.BPe.Eventos
                 throw new RequisicaoAlterarPoltronaException("");
         }
 
-        public void ValidaESalvaXML(string caminhoSalvar)
+        public void ValidarESalvar(string caminhoSalvar)
         {
             this.Valida();
             string xml = this.retEvento.xml;

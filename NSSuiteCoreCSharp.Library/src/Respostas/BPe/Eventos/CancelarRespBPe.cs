@@ -1,16 +1,15 @@
-﻿
-using NSSuiteCoreCSharp.Commons;
-using NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes;
+﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas._Genéricas.Eventos;
 using NSSuiteCoreCSharp.Respostas.BPe.Eventos;
 using NSSuiteCSharpLib.Genericos.Exceptions;
-using NSSuiteCSharpLib.Requisicoes.BPe.Eventos;
+using System;
 using System.Collections.Generic;
 
 namespace NSSuiteCSharpLib.Respostas.BPe
 {
-    public class CancelarRespBPe : ICancelamentoResp, IEventoSalvoRespBPe
+    public class CancelarRespBPe : ICancelamentoResp
     {
         public RetEventoBPe retEvento { get; set; }
         public string status { get; set; }
@@ -25,16 +24,13 @@ namespace NSSuiteCSharpLib.Respostas.BPe
                 string cStat = this.retEvento.cStat;
                 if (!cStat.Equals("135"))
                     throw new RequisicaoCancelarException("");
+            } 
+            else if (this.status.Equals("-3"))
+            {
+                throw new RequisicaoCancelarException("Ocorreu um erro ao Cancelar seu DFe, verifique o log para ter mais informações!");
             }
             else
                 throw new RequisicaoCancelarException("Ocorreu um erro ao Cancelar seu DFe, verifique o log para ter mais informações!");
-        }
-        public void ValidaESalvaXML(string caminhoSalvar)
-        {
-            this.Valida();
-            string xml = retEvento.xml;
-            string chave = retEvento.chBPe;
-            Util.SalvarXML(xml, caminhoSalvar, chave);
         }
     }
 }
