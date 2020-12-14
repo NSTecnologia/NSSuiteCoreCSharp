@@ -1,14 +1,8 @@
-﻿
+﻿using Newtonsoft.Json;
 using NSSuiteCoreCSharp.Library.src.Commons;
-using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
-using NSSuiteCoreCSharp.Requisicoes._Genericos.Eventos;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas._Genéricas.Eventos;
-using NSSuiteCoreCSharp.Respostas.BPe.Eventos;
-using NSSuiteCSharpLib.Genericos.Exceptions;
-using NSSuiteCSharpLib.Requisicoes.BPe.Eventos;
-using NSSuiteCSharpLib.Respostas._Genéricas;
-using System;
 using System.Collections.Generic;
 
 namespace NSSuiteCSharpLib.Respostas.NFe
@@ -27,16 +21,18 @@ namespace NSSuiteCSharpLib.Respostas.NFe
             {
                 case "200":
                     {
-                        if (this.retEvento.cStat.Equals("135"))
-                            throw new RequisicaoCancelarException("");
+                        if (!this.retEvento.cStat.Equals("135"))
+                            throw new RequisicaoCancelarException($"Codigo erro: {this.erro.cStat}. Motivo do erro: {this.erro.xMotivo}");
 
-                        Util.GravarLinhaLog("CANCELAMENTO NFE REALIZADO COM SUCESSO");
+                        Util.GravarLinhaLog("[CANCELAMENTO_NFE_REALIZADO_COM_SUCESSO]");
                         break;
                     }
                 case "-3":
-                    throw new RequisicaoCancelarException("");
+                    throw new RequisicaoCancelarException($"Codigo erro: {this.erro.cStat}. Motivo do erro: {this.erro.xMotivo}");
+                case "-2":
+                    throw new RequisicaoCancelarException($"{this.motivo}");
                 default:
-                    throw new RequisicaoCancelarException("");
+                    throw new RequisicaoCancelarException($"Erro não catalogado, verifique o JSON de retono: {JsonConvert.SerializeObject(this)}");
             }
         }
     }

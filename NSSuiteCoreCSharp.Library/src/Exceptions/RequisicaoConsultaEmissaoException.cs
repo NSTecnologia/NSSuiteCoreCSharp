@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NSSuiteCSharpLib.Genericos.Exceptions
+namespace NSSuiteCoreCSharp.Library.src.Exceptions
 {
     public class RequisicaoConsultaEmissaoException : ErroRequisicaoAPIException
     {

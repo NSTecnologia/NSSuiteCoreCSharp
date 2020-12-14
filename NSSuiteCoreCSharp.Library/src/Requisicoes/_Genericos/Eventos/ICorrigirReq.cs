@@ -7,8 +7,7 @@ namespace NSSuiteCoreCSharp.Requisicoes._Genericos.Eventos
 {
     public interface ICorrigirReq : IRequisicao
     {
-       string tpAmb { get; set; }
        string dhEvento { get; set; }
-       string nSeqEvento { get; set; }
+       int nSeqEvento { get; set; }
     }
 }

@@ -1,7 +1,5 @@
-﻿using NSSuiteCoreCSharp.Commons;
-using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
+﻿using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
-using System.Collections.Generic;
 
 namespace NSSuiteCSharpLib.Respostas._Genéricas
 {

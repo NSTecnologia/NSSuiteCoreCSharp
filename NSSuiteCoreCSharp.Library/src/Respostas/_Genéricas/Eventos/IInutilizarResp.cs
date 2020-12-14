@@ -1,8 +1,10 @@
-﻿namespace NSSuiteCoreCSharp.Respostas._Genéricas.Eventos
+﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
+
+namespace NSSuiteCoreCSharp.Respostas._Genéricas.Eventos
 {
-    public interface IInutilizarResp
+    public interface IInutilizarResp : IResposta
     {
-        public string status { get; set; }
-        public string motivo { get; set; }
+        void ValidarESalvar(string caminhoSalvar);
     }
 }

@@ -6,7 +6,6 @@ namespace NSSuiteCoreCSharp.Library.src.Requisicoes._Genericos.Emissoes
     {
         string CNPJ { get; set; }
         string nsNRec { get; set; }
-        int tpAmb { get; set; }
 
     }
 }
