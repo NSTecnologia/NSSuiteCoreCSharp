@@ -15,7 +15,7 @@ namespace NSSuiteCSharpLib.Requisicoes.NFe
     public class CancelarReqNFe : SolicitavelNaAPI, ICancelamentoReq, IEventoSincronoReqNFe
     {
         [JsonProperty("chNFe", Required = Required.Always)]
-        public string chNFe { get; set; }
+        public string chave { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("tpAmb", Required = Required.Always)]
@@ -51,7 +51,7 @@ namespace NSSuiteCSharpLib.Requisicoes.NFe
             var downloadRequisicao = new DownloadEventoReqNFe
             {
                 tpAmb = this.tpAmb,
-                chNFe = this.chNFe,
+                chNFe = this.chave,
                 tpDown = tpDown,
                 tpEvento = TipoDeEventoNFe.CANCELAMENTO,
                 nSeqEvento = 1
