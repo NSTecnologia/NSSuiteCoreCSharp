@@ -1,7 +1,6 @@
-﻿using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Utilitarios;
-using System;
+﻿using NSSuiteCoreCSharp.Library.src.Exceptions;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Utilitarios;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Utilitarios
 {
@@ -14,7 +13,7 @@ namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Utilitarios
         public void Valida()
         {
             if (!"200".Equals(this.status))       
-                throw new Exception($"Erro ao listar nsnrecs de NFe: {this.status} - {this.motivo}");
+                throw new RequisicaoListarNSNRecException($"Erro ao listar nsnrecs de NFe: {this.status} - {this.motivo}");
         }
     }
 }

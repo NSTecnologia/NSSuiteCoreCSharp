@@ -1,4 +1,5 @@
 ﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Respostas._Genéricas.Eventos;
 using System;
@@ -28,9 +29,9 @@ namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Eventos
                 }
             }
             else if(erro != null)
-                throw new Exception($"{this.erro.cStat} - {this.erro.xMotivo}");
+                throw new RequisicaoConsultaSituacaoException($"{this.erro.cStat} - {this.erro.xMotivo}");
             else
-                throw new Exception($"Erro ao Consultar Situacao da NFe: {this.status} - {this.motivo}");
+                throw new RequisicaoConsultaSituacaoException($"Erro ao Consultar Situacao da NFe: {this.status} - {this.motivo}");
             
         }
     }

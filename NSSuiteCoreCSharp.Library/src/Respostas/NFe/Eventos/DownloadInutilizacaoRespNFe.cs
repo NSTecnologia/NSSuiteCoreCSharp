@@ -1,7 +1,7 @@
 ﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
 using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Eventos;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
-using System;
 
 namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Eventos
 {
@@ -21,12 +21,12 @@ namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Eventos
                     Util.GravarLinhaLog("[DOWNLOAD_INUTILIZACAO_NFE_FEITA_COM_SUCESSO]");
                     return;
                 }
-                throw new Exception();
+                throw new RequisicaoDownloadInutilizacaoException("Erro nao catalogado ao fazer o Download de Inutilizacao de NFe, verifique os logs para mais informacoes");
             }
             else if (erro != null)
-                throw new Exception($"{this.erro.cStat} - {this.erro.xMotivo}");
+                throw new RequisicaoDownloadInutilizacaoException($"{this.erro.cStat} - {this.erro.xMotivo}");
             else
-                throw new Exception($"Erro ao fazer Download de Inutilizacao de NFe: {this.status} - {this.motivo}");
+                throw new RequisicaoDownloadInutilizacaoException($"Erro ao fazer Download de Inutilizacao de NFe: {this.status} - {this.motivo}");
 
         }
 

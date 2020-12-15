@@ -1,9 +1,7 @@
 ﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
 using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Utilitarios;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Utilitarios
 {
@@ -21,9 +19,9 @@ namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Utilitarios
                 return;
             }
             else if (erro != null)
-                throw new Exception($"{this.erro.cStat} - {this.erro.xMotivo}");
+                throw new RequisicaoEnvioEmailException($"{this.erro.cStat} - {this.erro.xMotivo}");
             else
-                throw new Exception($"Erro ao enviar email da NFe: {this.status} - {this.motivo}");
+                throw new RequisicaoEnvioEmailException($"Erro ao enviar email da NFe: {this.status} - {this.motivo}");
         }
     }
 }

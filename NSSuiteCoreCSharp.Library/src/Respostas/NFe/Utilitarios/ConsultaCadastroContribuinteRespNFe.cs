@@ -1,4 +1,5 @@
 ﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
 using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Utilitarios;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Utilitarios
                     return;
                 }
             }
-            throw new Exception($"Erro na consulta cadastro contribuinte da NFe: {this.status} - {this.motivo}");
+            throw new RequisicaoConsultaCadastroContribuinteException($"Erro na consulta cadastro contribuinte da NFe: {this.status} - {this.motivo}");
         }
     }
     public class RetConsCad

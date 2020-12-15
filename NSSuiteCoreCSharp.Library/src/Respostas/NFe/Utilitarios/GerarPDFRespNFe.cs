@@ -1,9 +1,8 @@
 ﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
 using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Utilitarios;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Utilitarios
@@ -24,11 +23,11 @@ namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Utilitarios
                 return;
             }
             else if (erros != null)
-                throw new Exception($"Inutilizacao invalida de acordo com a validacao contra schema: {this.erros}");
+                throw new RequisicaoGerarPDFException($"Inutilizacao invalida de acordo com a validacao contra schema: {this.erros}");
             else if (erro != null)
-                throw new Exception($"{this.erro.cStat} - {this.erro.xMotivo}");
+                throw new RequisicaoGerarPDFException($"{this.erro.cStat} - {this.erro.xMotivo}");
             else
-                throw new Exception($"Erro ao gerar pdf de NFe: {this.status} - {this.motivo}");
+                throw new RequisicaoGerarPDFException($"Erro ao gerar pdf de NFe: {this.status} - {this.motivo}");
 
         }
 
