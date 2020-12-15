@@ -4,21 +4,20 @@ using NSSuiteCoreCSharp.Requisicoes._Genericos.Eventos;
 using NSSuiteCSharpLib.Requisicoes.NFe;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
-namespace NSSuiteCoreCSharp.Tests
+namespace NSSuiteCoreCSharp.Tests.Eventos
 {
-    public class CancelamentoSincronoDocumento
+    public class CancelarDocumentoSincrono
     {
 
         [Theory]
-        [MemberData(nameof(GetObjects))]
-        public void RealizaUmaEmissaoSincronaDadoUmDFe(IEventoSincronoReqNFe dfe)
+        [MemberData(nameof(GetDFes))]
+        public void RealizaUmaEmissaoSincronaDadoUmDFe(IEventoSincronoReqNFe dfe, TipoEvenDownload tpDown, string caminho, bool exibirPDFNaTela)
         {
             try
             {
-                dfe.EnvioSincrono(TipoEvenDownload.XML_E_PDF, @"C:\NotasTeste\", true);
+                dfe.EnvioSincrono(tpDown, caminho, exibirPDFNaTela);
             }
             catch (Exception e)
             {
@@ -26,7 +25,7 @@ namespace NSSuiteCoreCSharp.Tests
             }
         }
 
-        public static IEnumerable<object[]> GetObjects
+        public static IEnumerable<object[]> GetDFes
         {
             get
             {
@@ -37,18 +36,16 @@ namespace NSSuiteCoreCSharp.Tests
                     {
                         new CancelarReqNFe
                         {
-                            chave = "",
-                            nProt = "",
+                            chave = "43201207364617000135550000000124861966529827",
+                            nProt = "143200001088203",
                             tpAmb = TAmb.Homologacao,
                             xJust = "TESTE INTEGRACAO",
                             dhEvento = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz")
-                        }
+                        },
+                        TipoEvenDownload.XML_E_PDF,
+                        @"C:\Testes\Cancelamentos\NFe\",
+                        true
                     },
-                    
-                    //BPe
-                    //new object[]
-                    //{}
-
                 };
             }
         }

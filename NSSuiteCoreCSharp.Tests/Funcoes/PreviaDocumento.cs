@@ -1,22 +1,21 @@
-﻿using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+﻿using NSSuiteCoreCSharp.Library.src.Requisicoes._Genericos.Utilitarios;
 using NSSuiteCoreCSharp.Library.src.Requisicoes.NFe.Emissoes;
-using NSSuiteCoreCSharp.Requisicoes._Genericos.Emissoes;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Xunit;
 
 namespace NSSuiteCoreCSharp.Tests
 {
-    public class EmissaoSincronaDocumentos
+    public class PreviaDocumento
     {
-
         [Theory]
-        [MemberData(nameof(GetObjects))]
-        public void RealizaUmaEmissaoSincronaDadoUmDFe(IEmissaoDFeSincrona dfe)
+        [MemberData(nameof(GetPrevias))]
+        public void RealizaUmaEmissaoSincronaDadoUmDFe(IPreviaReq dfe)
         {
             try
             {
-                dfe.EnvioSincrono(TipoDownloadDFes.XML_PDF, @"C:\NotasTeste\", true, false);
+                dfe.MostrarDFePreviaPDF();
             }
             catch (Exception e)
             {
@@ -24,15 +23,15 @@ namespace NSSuiteCoreCSharp.Tests
             }
         }
 
-        public static IEnumerable<object[]> GetObjects
+        public static IEnumerable<object[]> GetPrevias
         {
             get
             {
                 return new[]
-                { 
+                {
                     //NFe
-                    new object[] 
-                    { 
+                    new object[]
+                    {
                         new EnvioReqNFe
                         {
                             infNFe = new TNFeInfNFe
@@ -45,7 +44,7 @@ namespace NSSuiteCoreCSharp.Tests
                                     natOp = "VENDA A PRAZO - S",
                                     mod = TMod.NFe,
                                     serie = "6",
-                                    nNF = "1013",
+                                    nNF = "1012",
                                     dhEmi = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz"),
                                     tpNF = TNFeInfNFeIdeTpNF.Saida,
                                     idDest = TNFeInfNFeIdeIdDest.OpInterna,
@@ -213,7 +212,6 @@ namespace NSSuiteCoreCSharp.Tests
                                     infCpl = "DOCUMENTO EMITIDO POR ME OU EPP OPTANTE PELO SIMPLES NACIONAL#BR#NÃO GERA DIREITO A CRÉDITO FISCAL DE ICMS, DE ISS E DE IPI#BR#"
                                 }
                             }
-
                         }
                     },
                     
@@ -384,5 +382,6 @@ namespace NSSuiteCoreCSharp.Tests
                 };
             }
         }
+
     }
 }
