@@ -71,7 +71,7 @@ namespace NSSuiteCoreCSharp.Library.src.Commons
 
             return root.GetElementsByTagName(elemento).Item(0).InnerText;
         }        
-        public static string GerarXMLDocumento<T>(T ObjectXML)
+        public static string SerializeXMLObject<T>(T ObjectXML)
         {
             XmlDocument xmlDoc = new XmlDocument();
             XmlSerializer xmlSerializer = new XmlSerializer(ObjectXML.GetType());
@@ -86,6 +86,15 @@ namespace NSSuiteCoreCSharp.Library.src.Commons
                 return sw.ToString();
             }
         }
+
+        public static object DeserializeXMLObject<T>(string strXML) where T : class
+        {          
+            XmlSerializer ser = new XmlSerializer(typeof(T));
+            using (StringReader sr = new StringReader(strXML))
+                return (T)ser.Deserialize(sr);
+            
+        }
+
         public static string CriarDiretorio(string caminho)
         {
             try
@@ -107,11 +116,9 @@ namespace NSSuiteCoreCSharp.Library.src.Commons
             {
                 if (!string.IsNullOrEmpty(xml))
                 {
-                    Util.GravarLinhaLog("[SALVANDO_XML_INICIO]");
                     string localParaSalvar = $"{caminho + nome}.xml";
                     string ConteudoSalvar = xml.Replace(@"\""", "");
                     File.WriteAllText(localParaSalvar, ConteudoSalvar);
-                    Util.GravarLinhaLog("[SALVANDO_XML_FIM]");
                 }
                 else
                 {
@@ -124,8 +131,7 @@ namespace NSSuiteCoreCSharp.Library.src.Commons
         {
             await Task.Run(() => {
                 if (!string.IsNullOrEmpty(pdf))
-                {
-                    Util.GravarLinhaLog("[SALVANDO_PDF_INICIO]");
+                {                    
                     string localParaSalvar = $"{caminho + nome}.pdf";
                     byte[] bytes = Convert.FromBase64String(pdf);
                     if (File.Exists(localParaSalvar))
@@ -134,9 +140,7 @@ namespace NSSuiteCoreCSharp.Library.src.Commons
                         writer.Write(bytes, 0, bytes.Length);
 
                     if (exibirPDFNaTela)                   
-                        System.Diagnostics.Process.Start(@"cmd.exe ", @"/c " + localParaSalvar);
-                    
-                    Util.GravarLinhaLog("[SALVANDO_PDF_FIM]");
+                        System.Diagnostics.Process.Start(@"cmd.exe ", @"/c " + localParaSalvar);               
                 }
                 else
                 {
@@ -154,7 +158,10 @@ namespace NSSuiteCoreCSharp.Library.src.Commons
             string nomeArq = DateTime.Now.ToString("MM-dd-yyyy");
 
             using (StreamWriter outputFile = new StreamWriter($"{caminho + nomeArq}.log", true))
+            {
                 outputFile.WriteLine(data + " - " + conteudo);
+            }
+
         }
     }
 }

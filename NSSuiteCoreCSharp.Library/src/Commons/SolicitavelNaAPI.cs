@@ -3,8 +3,6 @@ using NSSuiteCoreCSharp.Library.src.Exceptions;
 using System;
 using System.IO;
 using System.Net;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
 
 namespace NSSuiteCoreCSharp.Library.src.Commons
 {
@@ -40,7 +38,7 @@ namespace NSSuiteCoreCSharp.Library.src.Commons
                 case Conteudo.XML:
                     {
                         httpWebRequest.ContentType = "application/xml;charset=utf-8";
-                        requisicao = Util.GerarXMLDocumento(conteudo);
+                        requisicao = Util.SerializeXMLObject(conteudo);
                         break;
                     }
             }
