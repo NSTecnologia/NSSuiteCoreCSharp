@@ -3,7 +3,7 @@
 namespace NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes
 {
     public interface IRequisicao
-    { 
-         IResposta Envia();
+    {
+        IResposta Envia();
     }
 }

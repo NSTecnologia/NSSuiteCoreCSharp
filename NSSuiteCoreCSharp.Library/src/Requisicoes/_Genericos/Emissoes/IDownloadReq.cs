@@ -6,6 +6,5 @@ namespace NSSuiteCoreCSharp.Library.src.Requisicoes._Genericos.Emissoes
     public interface IDownloadReq : IRequisicao
     {
         TipoDownloadDFes tpDown { get; set; }
-        int tpAmb { get; set; }
     }
 }

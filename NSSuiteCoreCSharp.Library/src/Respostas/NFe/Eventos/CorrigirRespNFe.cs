@@ -1,7 +1,6 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-using NSSuiteCoreCSharp.Library.src.Commons;
+﻿using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
-using NSSuiteCSharpLib.Genericos.Exceptions;
 using NSSuiteCSharpLib.Respostas._Genéricas;
 using System.Collections.Generic;
 
@@ -24,7 +23,7 @@ namespace NSSuiteCSharpLib.Respostas.NFe
                         if (!retEvento.cStat.Equals("135"))
                             throw new RequisicaoCorrecaoException("");
 
-                        Util.GravarLinhaLog("CORRECAO NFE FEITA COM SUCESSO");
+                        Util.GravarLinhaLog("CORRECAO_NFE_FEITA_COM_SUCESSO");
                         break;
                     }
                 default:

@@ -1,10 +1,12 @@
-﻿using NSSuiteCoreCSharp.Library.src.Commons;
+﻿using Newtonsoft.Json;
+using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
 using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Eventos;
-using NSSuiteCSharpLib.Genericos.Exceptions;
 using NSSuiteCSharpLib.Respostas.NFe;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Eventos
 {
@@ -19,24 +21,20 @@ namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Eventos
         public void Valida()
         {
             if (!this.status.Equals("200"))
-                throw new RequisicaoDownloadEventoException("");
+                throw new RequisicaoDownloadEventoException($"Erro não catalogado, verifique o JSON de resposta: {JsonConvert.SerializeObject(this)}");
         }
 
         public void ValidarESalvar(string caminho, bool exibirPDF)
         {
             this.Valida();
 
-            string nome = retEvento.chNFe + "-procNFeEven";
+            Util.CriarDiretorio(caminho);
+            string filename = retEvento.chNFe + "-procNFeEven";
 
-            if (string.IsNullOrEmpty(this.xml))
-                Util.SalvarXML(this.xml, caminho, nome);
-
-            if (string.IsNullOrEmpty(this.pdf))
-            {
-                Util.SalvarPDF(this.pdf, caminho, nome);
-                if (exibirPDF)
-                    Process.Start(caminho + nome + ".pdf");
-            }
+            List<Task> tarefas = new List<Task>();        
+            tarefas.Add(Util.SalvarXML(this.xml, caminho, filename));
+            tarefas.Add(Util.SalvarPDF(this.pdf, caminho, filename, exibirPDF));
+            Task.WaitAll(tarefas.ToArray());
         }
     }
 }

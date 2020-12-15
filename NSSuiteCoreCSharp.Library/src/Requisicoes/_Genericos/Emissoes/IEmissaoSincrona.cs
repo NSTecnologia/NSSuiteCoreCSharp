@@ -5,7 +5,7 @@ namespace NSSuiteCoreCSharp.Requisicoes._Genericos.Emissoes
 {
     public interface IEmissaoDFeSincrona : IRequisicao
     {
-        void EnvioSincrono(TipoDownloadDFes tpDown, string caminho, bool exibirNaTela, bool a3);
+        void EnvioSincrono(TipoDownloadDFes tpDown, string caminho, bool exibirNaTela, bool a3 = false);
     }
     public enum TipoDownloadDFes
     {

@@ -10,7 +10,6 @@ namespace NSSuiteCSharpLib.Respostas._Genéricas.Emissoes
 {
     public interface IEnvioResp : IResposta
     {
-        string xMotivo { get; set; }
         List<string> erros { get; set; }
         Erro erro { get; set; }
     }

@@ -1,15 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using NSSuiteCoreCSharp.Library.src.Commons;
+using NSSuiteCoreCSharp.Library.src.Requisicoes._Genericos.Utilitarios;
 using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Utilitarios;
+using NSSuiteCoreCSharp.Library.src.Respostas.NFe.Utilitarios;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Emissoes;
+using NSSuiteCoreCSharp.Requisicoes.NFe.Emissoes;
 using NSSuiteCoreCSharp.Respostas.NFe.Emissoes;
+using NSSuiteCSharpLib.Requisicoes.NFe.Emissoes;
+using NSSuiteCSharpLib.Respostas.NFe;
 
-namespace NSSuiteCoreCSharp.Requisicoes.NFe.Emissoes
+namespace NSSuiteCoreCSharp.Library.src.Requisicoes.NFe.Emissoes
 {
     [System.CodeDom.Compiler.GeneratedCode("xsd", "4.8.3928.0")]
     [System.Serializable()]
@@ -238,7 +245,7 @@ namespace NSSuiteCoreCSharp.Requisicoes.NFe.Emissoes
     [XmlType(Namespace = "http://www.portalfiscal.inf.br/nfe")]
     [XmlRoot("NFe", Namespace = "http://www.portalfiscal.inf.br/nfe", IsNullable = false)]
     [JsonObject("NFe")]
-    public partial class EnvioReqNFe : SolicitavelNaAPI, IEmissaoDFeSincrona
+    public partial class EnvioReqNFe : SolicitavelNaAPI, IEmissaoDFeSincrona, IPreviaReq
     {
         public TNFeInfNFe infNFe { get; set; }
 
@@ -252,17 +259,79 @@ namespace NSSuiteCoreCSharp.Requisicoes.NFe.Emissoes
 
         public IResposta Envia()
         {
-            string resposta = EnviaConteudoParaAPI(this, Endpoints.NFeEnvio);
+            const string requestURL = "https://nfe.ns.eti.br/nfe/issue";
+
+            Util.GravarLinhaLog("[ENVIO_NFE_INICIO]");
+            string resposta = EnviaConteudoParaAPI(this, requestURL);
+            Util.GravarLinhaLog("[ENVIO_NFE_FIM]");
+
             return JsonConvert.DeserializeObject<EnvioRespNFe>(resposta);
         }
-        public void EnvioSincrono(TipoDownloadDFes tpDown, string caminho, bool exibirNaTela, bool a3)
+        public void EnvioSincrono(TipoDownloadDFes tpDown, string caminho, bool exibirNaTela, bool a3 = false)
         {
-            throw new System.NotImplementedException();
+            Util.GravarLinhaLog("[INICIO_EMISSAO_SINCRONA_NFE]");
+
+            IResposta envioResposta = this.Envia();
+            envioResposta.Valida();
+
+            var consultaRequisicao = new ConsStatusProcessamentoReqNFe
+            {
+                CNPJ = infNFe.emit.CNPJ,
+                tpAmb = infNFe.ide.tpAmb,
+                nsNRec = (envioResposta as EnvioRespNFe).nsNRec
+            };
+
+            IResposta consultaResposta;
+            while (true)
+            {
+                consultaResposta = consultaRequisicao.Envia();
+                try
+                {
+                    consultaResposta.Valida();
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    continue;
+                }
+            }
+
+            var downloadRequisicao = new DownloadReqNFe
+            {
+                tpDown = tpDown,
+                tpAmb = infNFe.ide.tpAmb,
+                chNFe = (consultaResposta as ConsStatusProcessamentoRespNFe).chNFe
+            };
+            var downloadResposta = downloadRequisicao.Envia() as DownloadRespNFe;
+            downloadResposta.ValidarESalvar(caminho, exibirNaTela);
+
+            Util.GravarLinhaLog("[FIM_EMISSAO_SINCRONA_NFE]");
         }
+
+        public IPreviaResp MostrarDFePreviaPDF()
+        {
+            const string requestURL = "https://nfe.ns.eti.br/util/preview/nfe";
+
+            Util.GravarLinhaLog("[PREVIA_NFE_INICIO]");
+            string resposta = EnviaConteudoParaAPI(this, requestURL);
+            Util.GravarLinhaLog("[PREVIA_NFE_FIM]");
+            var previaResp = JsonConvert.DeserializeObject<PreviaRespNFe>(resposta);
+            previaResp.ValidarEMostrar();
+
+            return previaResp;
+        }
+
         public override string ToJSONString()
         {
             JObject root = JObject.FromObject(new { NFe = this });
-            return JsonConvert.SerializeObject(root, Formatting.Indented);
+            return JsonConvert.SerializeObject(
+                root,
+                Formatting.Indented,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                }
+            );
         }
     }
 
@@ -274,13 +343,10 @@ namespace NSSuiteCoreCSharp.Requisicoes.NFe.Emissoes
     [XmlType(AnonymousType = true, Namespace = "http://www.portalfiscal.inf.br/nfe")]
     public partial class TNFeInfNFe
     {
-        /// <remarks/>
         public TNFeInfNFeIde ide { get; set; }
 
-        /// <remarks/>
         public TNFeInfNFeEmit emit { get; set; }
 
-        /// <remarks/>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public TNFeInfNFeAvulsa avulsa { get; set; }
 

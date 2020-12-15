@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using NSSuiteCSharpLib.Genericos.Exceptions;
+using NSSuiteCoreCSharp.Library.src.Exceptions;
 using System;
 using System.IO;
 using System.Net;
@@ -12,7 +12,10 @@ namespace NSSuiteCoreCSharp.Library.src.Commons
         //private const string Token = "INSIRA_SEU_TOKEN_AQUI";
         public virtual string ToJSONString()
         {
-            return JsonConvert.SerializeObject(this);
+            return JsonConvert.SerializeObject(this, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
         }
         protected string EnviaConteudoParaAPI(SolicitavelNaAPI conteudo, string url, Conteudo tpConteudo = Conteudo.JSON)
         {
@@ -35,12 +38,12 @@ namespace NSSuiteCoreCSharp.Library.src.Commons
                 case Conteudo.XML:
                     {
                         httpWebRequest.ContentType = "application/xml;charset=utf-8";
-                        requisicao = Util.GerarXMLDocumento(conteudo);
+                        requisicao = Util.SerializeXMLObject(conteudo);
                         break;
                     }
             }
-            Util.GravarLinhaLog($"[TOKEN REQUISICAO: {Token}]");
-            Util.GravarLinhaLog("[DADOS_REQUISITADOS_API]");
+            Util.GravarLinhaLog($"[TOKEN_REQUISICAO: {Token}]");
+            Util.GravarLinhaLog("[DADOS_REQUISITADOS_NA_API]");
             Util.GravarLinhaLog(requisicao);
 
             using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
