@@ -1,11 +1,9 @@
 ﻿using NSSuiteCoreCSharp.Library.src.Commons;
 using NSSuiteCoreCSharp.Library.src.Exceptions;
-using NSSuiteCoreCSharp.Requisicoes._Genericos.Padroes;
 using NSSuiteCoreCSharp.Respostas._Genéricas;
 using NSSuiteCSharpLib.Respostas._Genéricas.Emissoes;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NSSuiteCoreCSharp.Respostas.NFe.Emissoes
 {
@@ -19,33 +17,19 @@ namespace NSSuiteCoreCSharp.Respostas.NFe.Emissoes
 
         public void Valida()
         {
-            switch (this.status)
+            if ("200".Equals(this.status) || "-6".Equals(this.status))
             {
-                case "200":
-                case "-6":
-                    {
-                        Util.GravarLinhaLog($"[ENVIO_FEITO_COM_SUCESSO]");
-                        break;
-                    }
-                case "-7":
-                        throw new RequisicaoEmissaoException($"{this.motivo}. nsNRec: {this.nsNRec}");
-                case "-4":
-                case "-2":
-                        throw new RequisicaoEmissaoException($"{this.motivo}. erros: {this.erros}");
-                case "-999":
-                case "-5":
-                        throw new RequisicaoEmissaoException($"{this.erro.xMotivo}.");
-                default:
-                    try
-                    {
-                        throw new RequisicaoEmissaoException($"{this.motivo}.");
-                    }
-                    catch (Exception)
-                    {
-
-                        throw new RequisicaoEmissaoException($"{this}.");
-                    }
-            }
+                Util.GravarLinhaLog($"[ENVIO_FEITO_COM_SUCESSO]");
+                return;
+            }                 
+            else if ("-7".Equals(this.status))
+                throw new RequisicaoEmissaoException($"{this.motivo}. nsNRec: {this.nsNRec}");
+            else if (erros != null)
+                throw new RequisicaoEmissaoException($"NFe invalida de acordo com a validacao contra schema: {this.erros}");
+            else if (erro != null)
+                throw new RequisicaoEmissaoException($"{this.erro.cStat} - {this.erro.xMotivo}");
+            else
+                throw new RequisicaoEmissaoException($"Erro ao Enviar a NFe: {this.status} - {this.motivo}");      
         }
     }
 }

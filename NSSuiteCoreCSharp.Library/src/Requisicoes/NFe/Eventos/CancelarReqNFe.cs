@@ -1,14 +1,12 @@
-﻿
-using Newtonsoft.Json;
-using System; 
+﻿using Newtonsoft.Json;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Eventos;
 using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
 using NSSuiteCoreCSharp.Library.src.Commons;
 using NSSuiteCoreCSharp.Library.src.Requisicoes._Genericos.Eventos;
 using NSSuiteCSharpLib.Respostas.NFe;
-using NSSuiteCoreCSharp.Library.src.Respostas.NFe.Eventos;
 using NSSuiteCoreCSharp.Library.src.Requisicoes.NFe.Emissoes;
 using Newtonsoft.Json.Converters;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Eventos;
 
 namespace NSSuiteCSharpLib.Requisicoes.NFe
 {
@@ -51,12 +49,12 @@ namespace NSSuiteCSharpLib.Requisicoes.NFe
             var downloadRequisicao = new DownloadEventoReqNFe
             {
                 tpAmb = this.tpAmb,
-                chNFe = this.chave,
+                chave = this.chave,
                 tpDown = tpDown,
                 tpEvento = TipoDeEventoNFe.CANCELAMENTO,
                 nSeqEvento = 1
             };
-            var downloadResposta = downloadRequisicao.Envia() as DownloadEventoRespNFe;
+            var downloadResposta = downloadRequisicao.Envia() as IDownloadEventoResp;
             downloadResposta.ValidarESalvar(caminhoSalvar, exibirPDF);
 
             Util.GravarLinhaLog("[CANCELAMENTO_SINCRONO_NFE_FIM]");

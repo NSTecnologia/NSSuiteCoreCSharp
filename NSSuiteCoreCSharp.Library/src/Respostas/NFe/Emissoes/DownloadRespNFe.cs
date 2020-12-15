@@ -33,6 +33,8 @@ namespace NSSuiteCSharpLib.Respostas.NFe
             Util.CriarDiretorio(caminho);
             string filename = $"{this.chNFe}-procNFe";
 
+            Util.GravarLinhaLog("[BAIXANDO_DOCUMENTOS_NA_MAQUINA]");
+            Util.GravarLinhaLog($"[CAMINHO_DOCUMENTOS] - {caminho}");
             List<Task> tarefas = new List<Task>();
             tarefas.Add(Util.SalvarXML(this.xml, caminho, filename));
             tarefas.Add(Util.SalvarPDF(this.pdf, caminho, filename, exibirPDF));

@@ -13,7 +13,7 @@ namespace NSSuiteCSharpLib.Requisicoes.NFe
     public class DownloadEventoReqNFe : SolicitavelNaAPI, IDownloadEventoReq
     {
         [JsonProperty("chNFe", Required = Required.Always)]
-        public string chNFe { get; set; }
+        public string chave { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("tpDown", Required = Required.Always)]

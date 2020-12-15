@@ -267,7 +267,7 @@ namespace NSSuiteCoreCSharp.Library.src.Requisicoes.NFe.Emissoes
 
             return JsonConvert.DeserializeObject<EnvioRespNFe>(resposta);
         }
-        public void EnvioSincrono(TipoDownloadDFes tpDown, string caminho, bool exibirNaTela, bool a3)
+        public void EnvioSincrono(TipoDownloadDFes tpDown, string caminho, bool exibirNaTela, bool a3 = false)
         {
             Util.GravarLinhaLog("[INICIO_EMISSAO_SINCRONA_NFE]");
 

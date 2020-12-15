@@ -28,8 +28,10 @@ namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Eventos
         {
             this.Valida();
 
+            Util.CriarDiretorio(caminho);
             string filename = retEvento.chNFe + "-procNFeEven";
-            List<Task> tarefas = new List<Task>();
+
+            List<Task> tarefas = new List<Task>();        
             tarefas.Add(Util.SalvarXML(this.xml, caminho, filename));
             tarefas.Add(Util.SalvarPDF(this.pdf, caminho, filename, exibirPDF));
             Task.WaitAll(tarefas.ToArray());

@@ -8,5 +8,6 @@ namespace NSSuiteCoreCSharp.Library.src.Requisicoes._Genericos.Eventos
     public interface IConsultarSituacaoReq : IRequisicao
     {
         string licencaCnpj { get; set; }
+        string chave { get; set; }
     }
 }

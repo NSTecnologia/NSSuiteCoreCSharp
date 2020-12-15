@@ -1,22 +1,20 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NSSuiteCoreCSharp.Library.src.Commons;
 using NSSuiteCoreCSharp.Library.src.Requisicoes._Genericos.Eventos;
 using NSSuiteCoreCSharp.Library.src.Requisicoes.NFe.Emissoes;
 using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas;
-using NSSuiteCoreCSharp.Library.src.Respostas.NFe.Eventos;
+using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Eventos;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Eventos;
 using NSSuiteCSharpLib.Requisicoes.NFe;
 using NSSuiteCSharpLib.Respostas.NFe;
-using System;
 
 namespace NSSuiteCSharpLib.Requisicoes._Genericos
 {
     public class CorrigirReqNFe : SolicitavelNaAPI, ICorrigirReq, IEventoSincronoReqNFe
     {
         [JsonProperty("chNFe", Required = Required.Always)]
-        public string chNFe { get; set; }
+        public string chave { get; set; }
 
         [JsonProperty("xCorrecao", Required = Required.Always)]
         public string xCorrecao { get; set; }
@@ -50,12 +48,12 @@ namespace NSSuiteCSharpLib.Requisicoes._Genericos
             var downloadRequisicao = new DownloadEventoReqNFe
             {
                 tpAmb = this.tpAmb,
-                chNFe = this.chNFe,
+                chave = this.chave,
                 tpDown = tpDown,
                 tpEvento = TipoDeEventoNFe.CARTA_DE_CORRECAO,
                 nSeqEvento = this.nSeqEvento
             };
-            var downloadResposta = downloadRequisicao.Envia() as DownloadEventoRespNFe;
+            var downloadResposta = downloadRequisicao.Envia() as IDownloadEventoResp;
             downloadResposta.ValidarESalvar(caminhoSalvar, exibirPDF);
         }
     }

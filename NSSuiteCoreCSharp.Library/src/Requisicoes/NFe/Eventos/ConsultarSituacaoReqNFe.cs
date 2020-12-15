@@ -18,7 +18,7 @@ namespace NSSuiteCoreCSharp.Library.src.Requisicoes.NFe.Eventos
         public TAmb tpAmb { get; set; }
 
         [JsonProperty("chNFe", Required = Required.Always)]
-        public string chNFe { get; set; }
+        public string chave { get; set; }
 
         [JsonProperty("versao", Required = Required.Always)]
         public string versao { get; set; }
