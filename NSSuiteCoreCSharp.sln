@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSSuiteCoreCSharp.Library", "NSSuiteCoreCSharp.Library\NSSuiteCoreCSharp.Library.csproj", "{4BD32D18-3941-43C6-B3F0-116809E99D9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSSuiteCoreCSharp.Library", "NSSuiteCoreCSharp.Library\NSSuiteCoreCSharp.Library.csproj", "{4BD32D18-3941-43C6-B3F0-116809E99D9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSSuiteCoreCSharp.Tests", "NSSuiteCoreCSharp.Tests\NSSuiteCoreCSharp.Tests.csproj", "{117A243B-D642-448D-8D6B-72D3791331D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSSuiteCoreCSharp.Tests", "NSSuiteCoreCSharp.Tests\NSSuiteCoreCSharp.Tests.csproj", "{117A243B-D642-448D-8D6B-72D3791331D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -12,9 +12,9 @@ using NSSuiteCoreCSharp.Library.src.Respostas._Genéricas.Utilitarios;
 using NSSuiteCoreCSharp.Library.src.Respostas.NFe.Utilitarios;
 using NSSuiteCoreCSharp.Requisicoes._Genericos.Emissoes;
 using NSSuiteCoreCSharp.Requisicoes.NFe.Emissoes;
+using NSSuiteCoreCSharp.Respostas._Genéricas.Emissoes;
 using NSSuiteCoreCSharp.Respostas.NFe.Emissoes;
 using NSSuiteCSharpLib.Requisicoes.NFe.Emissoes;
-using NSSuiteCSharpLib.Respostas.NFe;
 
 namespace NSSuiteCoreCSharp.Library.src.Requisicoes.NFe.Emissoes
 {
@@ -302,7 +302,7 @@ namespace NSSuiteCoreCSharp.Library.src.Requisicoes.NFe.Emissoes
                 tpAmb = infNFe.ide.tpAmb,
                 chNFe = (consultaResposta as ConsStatusProcessamentoRespNFe).chNFe
             };
-            var downloadResposta = downloadRequisicao.Envia() as DownloadRespNFe;
+            var downloadResposta = downloadRequisicao.Envia() as IDownloadResp;
             downloadResposta.ValidarESalvar(caminho, exibirNaTela);
 
             Util.GravarLinhaLog("[FIM_EMISSAO_SINCRONA_NFE]");

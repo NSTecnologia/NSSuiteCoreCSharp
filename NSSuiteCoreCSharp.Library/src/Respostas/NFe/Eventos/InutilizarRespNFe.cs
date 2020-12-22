@@ -37,6 +37,8 @@ namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Eventos
         {
             this.Valida();
 
+            Util.CriarDiretorio(caminhoSalvar);
+
             string filename = retornoInutNFe.chave + "-inu";       
             Util.SalvarXML(this.retornoInutNFe.xmlInut, caminhoSalvar, filename);
         }

@@ -8,7 +8,7 @@ namespace NSSuiteCSharpLib.Requisicoes._Genericos.Eventos
 {
     public abstract class InutilizarReq : SolicitavelNaAPI, IRequisicao
     {
-        [JsonProperty("anoi", Required = Required.Always)]
+        [JsonProperty("ano", Required = Required.Always)]
         public string ano { get; set; }
 
         [JsonProperty("CNPJ", Required = Required.Always)]

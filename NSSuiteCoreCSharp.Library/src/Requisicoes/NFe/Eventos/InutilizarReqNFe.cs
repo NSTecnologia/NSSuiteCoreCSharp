@@ -21,8 +21,8 @@ namespace NSSuiteCoreCSharp.Library.src.Requisicoes.NFe.Eventos
         [JsonProperty("nNFIni", Required = Required.Always)]
         public string nNFIni { get; set; }
 
-        [JsonProperty("nNFFim", Required = Required.Always)]
-        public string nNFFim { get; set; }
+        [JsonProperty("nNFFin", Required = Required.Always)]
+        public string nNFFin { get; set; }
 
         public override IResposta Envia()
         {

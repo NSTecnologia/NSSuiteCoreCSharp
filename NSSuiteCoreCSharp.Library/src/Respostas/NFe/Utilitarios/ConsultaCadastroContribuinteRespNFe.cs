@@ -40,8 +40,7 @@ namespace NSSuiteCoreCSharp.Library.src.Respostas.NFe.Utilitarios
         public string CNPJ { get; set; }
         public string dhCons { get; set; }
         public int cUF { get; set; }
-
-        protected List<InfCad> infCad { get; set; }
+        public List<InfCad> infCad { get; set; }
     }
     public class InfCad
     {
